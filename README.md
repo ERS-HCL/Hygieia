@@ -2,7 +2,7 @@
 <img width="250" align="top" src="/UI/src/assets/img/hygieia_b.png"><a href="https://www.blackducksoftware.com/about/news-events/releases/2015-open-source-rookies-year"><img width="55" align="top" hspace="20" src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/Rookies_Award_Badge.png"></a> 
 </div>
 <div align="center"> 
- <p> <b>Pronunciation: <i>hi-gee-ya <a href="https://en.wikipedia.org/wiki/Hygieia"></i>(Origin: Greek)</a> </p>
+ This Metrics tool project is Forked from HYGIEIA  open source tool
 </div>
 
 <div align="center">
@@ -20,35 +20,71 @@
   <a href="https://gitter.im/capitalone/Hygieia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/Join%20Chat.svg" alt="Gitter Chat"/></a>
 </div>
 
-<div align="center">
-  <h2>
-    <a href="http://capitalone.github.io/Hygieia/getting_started.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/Buttons/Documentation.png" alt="Documentation" width="125" align="center"></a>
-    <span>|</span>
-    <a href="http://capitalone.github.io/Hygieia/screenshots.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/Buttons/Screenshots.png" alt="Screenshots" width="125" align="center"></a>
-    <span>|</span>
-    <a href="http://capitalone.github.io/Hygieia/contribute.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/Buttons/Contribute.png" alt="Contribute" width="125" align="center"></a>
-    <span>|</span>
-    <a href="http://capitalone.github.io/Hygieia/contact.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/Buttons/Contact.png" alt="Contact" width="125" align="center"></a>
-  </h2>
-</div>
-
-<table>
-<colgroup>
-<col width="33.3%" />
-<col width="33.3%" />
-<col width="33.4%" />
-</colgroup>
-
-<tbody>
-<tr>
-<td><a href="http://capitalone.github.io/Hygieia/getting_started.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/About.png" alt="About Icon" height="145" width="280"/></a></td>
-<td><a href="https://www.youtube.com/watch?v=SoNTA78j0tc"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Video.png" alt="Video Icon" align="center" height="145" width="280"/></td>
-<td><a href="http://capitalone.github.io/Hygieia/architecture.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Architecture.png" alt="Architecture Icon" align="center" height="145" width="280"/></a></td>
+<table width="95%"  cellspacing"="0" "cellpadding"="0">
+<tr><td width="10%"> Objectives </td> <td width="90%">&nbsp;</td><tr>
+<tr><td>&nbsp;</td><td>
+<ul><li>Automate Development Environment Setup</li>
+<li>Continuous Performance Measurement and Visualization</li>
+<li>Unified DevOps Dashboard</li></ul>
+</td></tr>
+<tr><td> Features </td> <td>&nbsp;</td><tr>
+<tr><td>&nbsp;</td><td><ul>
+<li>Visual Delivery Pipeline</li>
+<li>Team Dashboard</li>
+<li>Real-time Status</li>
+<li>Configurable View</li>
+</ul></td></tr>
+<tr><td>Build</td><td></td></tr>
+<tr><td>&nbsp;</td>
+<td>
+<ul> 
+<li> This Metrics tool is using  Spring Boot to package the components as an executable JAR file with dependencies.</li>
+<li> cmd:  mvn clean install package </li>
+<li> This will build the following Components </li>
+<ul>
+<div>
+```sh
+└── Quality Metrics Tool
+    ├── UI
+    ├── API
+    └── Collectors
+        ├─ Feature
+        │    ├── JIRA
+        │    └── VersionOne
+        └─ Repos
+        '     ├── GitHub
+        '     ├── GitLab
+        '     ├── Subversion 
+        '     └── Bitbucket
+        '
+        '
+```
+        and so on.  </div>
+<div> To run the UI module, in the command prompt, navigate to \QualityMetrics\UI, and then execute the following com 
+  <span> gulp build </span> </div>		
+</td>
 </tr>
-<tr>
-<td><a href="http://capitalone.github.io/Hygieia/framework.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Framework.png" alt="Framework Icon" align="center" height="145" width="280"/></td>
-<td><a href="http://capitalone.github.io/Hygieia/setup.html"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/Installation.png" alt="Install Icon" align="center" height="145" width="280"/></a></td>
-<td><a href="https://github.com/capitalone/Hygieia/graphs/contributors"><img src="https://github.com/capitalone/Hygieia/blob/gh-pages/media/images/ReadmeIcons/TopContributors.png" alt="Contributors Icon" align="center" height="145" width="280"/></a></td>
+<tr><td>Encrypt Properties to persist in Mongodb</td><td></td></tr>
+<tr><td>&nbsp;</td>
+<td>
+<ul> 
+
+
+<li>
+   cmd:  java -cp ~/.m2/repository/org/jasypt/jasypt/1.9.2/jasypt-1.9.2.jar  org.jasypt.intf.cli.JasyptPBEStringEncryptionCLI input="dbpassword" password=hygieiasecret algorithm=PBEWithMD5AndDES
+   <br/>
+ For detail information, please refer the base code base :<a href="http://capitalone.github.io/Hygieia/setup.html"> Documentation </a>
+</li></ul>
+   		
+</td>
 </tr>
-</tbody>
+<tr><td>Sample Dashboard - Team along with Microservices View</td>
+<td><img  align="top" src="/docs/dashboard.jpg"></td>
+</tr>
+<tr><td>Sample Dashboard - Team View</td>
+<td><img  align="top" src="/docs/team.jpg"></td>
+</tr>
+<tr><td>IBM TDP Dashboard</td>
+<td><img  align="top" src="/docs/tdp.jpg"></td>
+</tr>
 </table>
