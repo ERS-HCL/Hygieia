@@ -16,11 +16,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -68,21 +67,31 @@ public class DefaultBitbucketServerClient implements GitClient {
 		URI queryUriPage = null;
 		
 		try {
-	
+
+			if(repo != null && repo.getUserId() == null || repo != null && repo.getUserId() != null && repo.getUserId().isEmpty())
+				repo.setUserId(this.settings.getUsername());
+
+			if(repo != null && repo.getPassword() == null || repo != null && repo.getPassword() != null && repo.getPassword().isEmpty())
+				repo.setUserId(this.settings.getPassword());
+
+			doSSO(repo, repo.getUserId(), repo.getPassword());
+
 			URI queryUri = buildUri((String) repo.getOptions().get("url"), repo.getBranch(), repo.getLastUpdateCommit());
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("Rest Url: " + queryUri);
 			}
-			
+
+
+			String decryptedPassword = repo.getPassword();
 			// decrypt password
-			String decryptedPassword = "";
+			/*String decryptedPassword = "";
 			if (repo.getPassword() != null && !repo.getPassword().isEmpty()) {
 				try {
 					decryptedPassword = Encryption.decryptString(repo.getPassword(), settings.getKey());
 				} catch (EncryptionException e) {
 					LOG.error(e.getMessage());
 				}
-			}
+			}*/
 			
 			boolean lastPage = false;
 			queryUriPage = queryUri;
@@ -154,7 +163,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 		 * https://username@company.com/scm/project/repository.git
 		 * ssh://git@company.com/~username/repository.git
 		 * https://username@company.com/scm/~username/repository.git
-		 * 
+		 * https://pa283q@codecloud.web.att.com/scm/st_idse/cartms.git
 		 */
 		
 		String repoUrlRaw = rawUrl;
@@ -218,6 +227,50 @@ public class DefaultBitbucketServerClient implements GitClient {
 		}
 		
 		return builder.build();
+	}
+	public void doSSO(GitRepo repo, String username, String password) throws RestClientException,URISyntaxException {
+
+		try{
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+			MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+			map.add("j_username", username);
+			map.add("j_password", password);
+			String sso_url =  "https://" +  settings.getHost() + "/j_atl_security_check";
+			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+			ResponseEntity<String> response = this.restOperations.postForEntity( sso_url, request , String.class );
+			LOG.info(response.getBody());
+
+			//String repoSettingUrl = "https://" +  settings.getHost() + "/" + settings.getApi() ;
+			URI queryUri = buildUri((String) repo.getOptions().get("url"), repo.getBranch(), repo.getLastUpdateCommit());
+			//https://codecloud.web.att.com/rest/api/1.0/projects/st_idse/repos/serviceavailabilityms/settings/pull-requests
+			//HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+
+			if(queryUri != null && queryUri.getPath() != null && queryUri.getPath().contains("commits")){
+
+				String path = queryUri.getPath();
+				String settings_url = "https://" +  settings.getHost() + "/" + path.replace("commits","settings/pull-requests");
+				LOG.info(" Pull Request Settings " + settings_url);
+				ResponseEntity<String> settings_response = this.restOperations.getForEntity( settings_url, String.class,request );
+				LOG.info(" Pull settings reponse " + settings_response.toString());
+				JSONObject jsonParentObject = paresAsObject(settings_response);
+				if(jsonParentObject != null && jsonParentObject.containsKey("requiredApprovers")){
+					repo.setRequiredApprovers((long)jsonParentObject.get("requiredApprovers") );
+				}
+				else{
+					repo.setRequiredApprovers(0);
+				}
+
+			}
+
+
+
+		}
+		catch(RestClientException ex){
+			LOG.error(ex);
+			throw ex;
+		}
 	}
 
 	private ResponseEntity<String> makeRestCall(URI uri, String userId,

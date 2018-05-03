@@ -27,6 +27,77 @@ public class HudsonSettings {
     @Value("${folderDepth:10}")
     private int folderDepth;
 
+
+    private String ssoEntryURL;
+    private String ssoSuccessURL;
+    private String ssoLoginInitURL;
+    private String sesionInitURL;
+
+    public String getSessionAuthURL() {
+        return sessionAuthURL;
+    }
+
+    public void setSessionAuthURL(String sessionAuthURL) {
+        this.sessionAuthURL = sessionAuthURL;
+    }
+
+    private String sessionAuthURL;
+
+
+
+    private String username;
+    private String password;
+
+    public String getSsoEntryURL() {
+        return ssoEntryURL;
+    }
+
+    public void setSsoEntryURL(String ssoEntryURL) {
+        this.ssoEntryURL = ssoEntryURL;
+    }
+
+    public String getSsoSuccessURL() {
+        return ssoSuccessURL;
+    }
+
+    public void setSsoSuccessURL(String ssoSuccessURL) {
+        this.ssoSuccessURL = ssoSuccessURL;
+    }
+
+    public String getSsoLoginInitURL() {
+        return ssoLoginInitURL;
+    }
+
+    public void setSsoLoginInitURL(String ssoLoginInitURL) {
+        this.ssoLoginInitURL = ssoLoginInitURL;
+    }
+
+    public String getSesionInitURL() {
+        return sesionInitURL;
+    }
+
+    public void setSesionInitURL(String sesionInitURL) {
+        this.sesionInitURL = sesionInitURL;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
+
     public String getCron() {
         return cron;
     }

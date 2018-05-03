@@ -1,12 +1,6 @@
 package com.capitalone.dashboard.collector;
 
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CollectorItemConfigHistory;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.ConfigHistOperationType;
-import com.capitalone.dashboard.model.SonarCollector;
-import com.capitalone.dashboard.model.SonarProject;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.BaseCollectorRepository;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -14,11 +8,13 @@ import com.capitalone.dashboard.repository.SonarCollectorRepository;
 import com.capitalone.dashboard.repository.SonarProfileRepostory;
 import com.capitalone.dashboard.repository.SonarProjectRepository;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -108,7 +104,8 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
 
                 addNewProjects(projects, existingProjects, collector);
 
-                refreshData(enabledProjects(collector, instanceUrl), sonarClient,metrics);
+
+                refreshData(enabledProjects(collector, instanceUrl), sonarClient,metrics,instanceUrl);
                 
                 // Changelog apis do not exist for sonarqube versions under version 5.0
                 if (version >= 5.0) {
@@ -183,20 +180,131 @@ public class SonarCollectorTask extends CollectorTask<SonarCollector> {
         }
     }
 
-    private void refreshData(List<SonarProject> sonarProjects, SonarClient sonarClient, String metrics) {
+    // New
+    private   CodeQualityMetric updateQualityGateMetrics(CodeQualityMetric qualityGate, boolean status){
+
+        qualityGate = new CodeQualityMetric("attached_correct_qqate");
+        if(status) {
+            qualityGate.setValue(90.00);
+            qualityGate.setFormattedValue("90.00");
+        }
+        else{
+            qualityGate.setValue(0);
+            qualityGate.setFormattedValue("0.00");
+        }
+        return qualityGate;
+    }
+
+    // New
+    private CodeQualityMetric updateQualityProfileMetrics(CodeQualityMetric qualityProfile, boolean status){
+
+        qualityProfile = new CodeQualityMetric("attached_correct_qprofile");
+        if(status) {
+            qualityProfile.setValue(60.00);
+            qualityProfile.setFormattedValue("60.00");
+        }
+        else{
+            qualityProfile.setValue(0);
+            qualityProfile.setFormattedValue("0.00");
+        }
+        return  qualityProfile;
+    }
+
+
+    private void refreshData(List<SonarProject> sonarProjects, SonarClient sonarClient, String metrics , String instanceUrl) {
         long start = System.currentTimeMillis();
         int count = 0;
 
         for (SonarProject project : sonarProjects) {
             CodeQuality codeQuality = sonarClient.currentCodeQuality(project, metrics);
+
+            //New
+            boolean qProfileStatus = true;
+            boolean  qGateStatus = true;
+            if(project != null && project.getProjectName() != null ) {
+                LOG.info("project id " + project.getProjectId());
+                LOG.info("project Name " + project.getProjectName());
+                qProfileStatus = fetchQualityProfileInfo(instanceUrl, sonarClient, project.getProjectName());
+                qGateStatus = fetchQualityGateInfo(instanceUrl,sonarClient,project.getProjectName());
+            }
+
+
+            // New
+            // add Quality Gate
+            CodeQualityMetric qualityGate = new CodeQualityMetric("attached_correct_qqate");
+            qualityGate = updateQualityGateMetrics(qualityGate,qGateStatus);
+            if(codeQuality != null && codeQuality.getMetrics()!= null && qualityGate != null) {
+                codeQuality.getMetrics().add(qualityGate);
+            }
+            // New
+            // add Quality Profile
+            CodeQualityMetric qualityProfile = new CodeQualityMetric("attached_correct_qprofile");
+            qualityProfile = updateQualityProfileMetrics(qualityProfile,qProfileStatus);
+
+            if(codeQuality != null && codeQuality.getMetrics()!= null && qualityProfile != null) {
+                codeQuality.getMetrics().add(qualityProfile);
+            }
+
             if (codeQuality != null && isNewQualityData(project, codeQuality)) {
                 codeQuality.setCollectorItemId(project.getId());
                 codeQualityRepository.save(codeQuality);
                 count++;
             }
+            else{
+                 if(project != null &&  codeQuality!= null) {
+                     List<CodeQuality> codeQuality1 = codeQualityRepository.findByNameAndVersion(project.getProjectName(), codeQuality.getVersion());
+                     if (codeQuality1 != null && codeQuality1.size() > 0) {
+                         CodeQuality temp = codeQuality1.get(0);
+                         temp.getMetrics().add(qualityGate);
+                         temp.getMetrics().add(qualityProfile);
+                         codeQualityRepository.save(temp);
+                     }
+                 }
+            }
         }
         log("Updated", start, count);
     }
+
+    // New
+    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
+    private boolean fetchQualityProfileInfo(String instanceUrl,SonarClient sonarClient, String projectName) {
+             String qualityProfileKey = sonarSettings.getqProfile();
+             if(qualityProfileKey == null )
+                 qualityProfileKey = "java-idse_quality_profile-44711";
+
+             try {
+
+                 List<String> sonarProjects = sonarClient.getProfileProjects(instanceUrl,qualityProfileKey);
+                 if (sonarProjects != null && sonarProjects.size() > 0 && sonarProjects.contains(projectName))
+                     return true;
+                 else
+                     return false;
+             }catch(ParseException e){
+                 LOG.error(e);
+             }
+             return false;
+    }
+
+    // New
+    @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
+    private boolean fetchQualityGateInfo(String instanceUrl,SonarClient sonarClient, String projectName) {
+        String qualityGateKey = sonarSettings.getqGate();
+        if(qualityGateKey == null){
+            qualityGateKey = "10440";
+        }
+        try {
+            List<String> sonarProjects = sonarClient.retrieveGateAndProjectAssociation(instanceUrl, qualityGateKey);
+            if (sonarProjects != null && sonarProjects.size() > 0 && sonarProjects.contains(projectName))
+                return true;
+            else
+                return false;
+        }catch(ParseException e){
+            LOG.error(e);
+        }
+        return false;
+    }
+
+
     
     @SuppressWarnings("PMD.AvoidDeeplyNestedIfStmts")
     private void fetchQualityProfileConfigChanges(SonarCollector collector,String instanceUrl,SonarClient sonarClient) throws org.json.simple.parser.ParseException{

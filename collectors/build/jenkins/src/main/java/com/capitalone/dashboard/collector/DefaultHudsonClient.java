@@ -19,11 +19,10 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -34,6 +33,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -97,19 +97,130 @@ public class DefaultHudsonClient implements HudsonClient {
     private static final String BUILD_DETAILS_URL_SUFFIX = "/api/json?tree=" + StringUtils.join(BUILD_DETAILS_TREE, ",");
 
     private static final String DATE_FORMAT = "yyyy-MM-dd_HH-mm-ss";
+    private  HttpEntity<String> httpHeaders;
+    private MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
 
     @Autowired
     public DefaultHudsonClient(Supplier<RestOperations> restOperationsSupplier, HudsonSettings settings) {
+        map.add("authmethod", "on");
+        map.add("userid", settings.getUsername());
+        map.add("username", settings.getUsername());
+        map.add("password", settings.getPassword());
+        map.add("login-form-type", "pwd");
+        map.add("winauthtype", "once");
+        this.httpHeaders = new HttpEntity<>(
+                this.createHeaders(settings.getUsername(), settings.getPassword())
+        );
         this.rest = restOperationsSupplier.get();
         this.settings = settings;
     }
+
+    public void doSSO() throws RestClientException {
+
+        try{
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            String sso_url = this.settings.getSsoEntryURL();
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+            ResponseEntity<String> response = this.rest.postForEntity( sso_url, request , String.class );
+            String PD_ID= "";
+         //   LOG.info(response.getBody());
+
+
+
+            String successUrl = this.settings.getSsoSuccessURL();
+            ResponseEntity<String> successResponse = this.rest.exchange(successUrl, HttpMethod.GET, this.httpHeaders, String.class);
+           // LOG.info("success response " + successResponse.getBody());
+
+
+            // Get Cookies
+            if(successResponse != null && successResponse.getHeaders().containsKey("Set-Cookie")) {
+                List<String> cookies = successResponse.getHeaders().get("Set-Cookie");
+                HttpHeaders cookieHeaders = new HttpHeaders();
+                String cookieStr="";
+                for(String cookie : cookies){
+                    LOG.info("cookie name " + cookie);
+                    if(cookie.startsWith("PD-ID")){
+                        String tempStr = cookie;
+                        PD_ID = tempStr.replace("PD-ID=","");
+                    }
+                    String[] temp = cookie.split("=");
+                    if(temp != null && temp.length >=1){
+                        cookieHeaders.set(temp[0],temp[1]);
+                    }
+
+                    cookieStr += ";" + cookie;
+
+                }
+
+                cookieHeaders.set("Cookie",cookieStr);
+                this.httpHeaders = new HttpEntity<String>(cookieHeaders);
+            }
+            String InitUrl = this.settings.getSsoLoginInitURL() + PD_ID;
+            LOG.info(" Login Init URL " + InitUrl);
+            ResponseEntity<String> InitResponse = this.rest.exchange(InitUrl, HttpMethod.GET, this.httpHeaders, String.class);
+       //     LOG.info(InitResponse.getBody());
+
+            String SessionUrl = this.settings.getSesionInitURL();
+            LOG.info(" Session Init URL " + SessionUrl);
+            ResponseEntity<String> SessionResponse = this.rest.exchange(SessionUrl, HttpMethod.GET, this.httpHeaders, String.class);
+     //       LOG.info(SessionResponse.getBody());
+
+            List<String> cookies = SessionResponse.getHeaders().get("Set-Cookie");
+            HttpHeaders cookieHeaders = new HttpHeaders();
+            String cookieStr="";
+            for(String cookie : cookies){
+                LOG.info("cookie name " + cookie);
+                cookieStr += ";" + cookie;
+            }
+            cookieHeaders.set("Cookie",cookieStr);
+            this.httpHeaders = new HttpEntity<String>(cookieHeaders);
+
+            String SessionUrl1 = this.settings.getSesionInitURL();
+            LOG.info(" Session Init URL " + SessionUrl);
+            ResponseEntity<String> SessionResponse1 = this.rest.exchange(SessionUrl1, HttpMethod.GET, this.httpHeaders, String.class);
+     //       LOG.info(SessionResponse1.getBody());
+
+            cookies = SessionResponse1.getHeaders().get("Set-Cookie");
+            cookieStr = "";
+            for(String cookie : cookies){
+                LOG.info("cookie name " + cookie);
+                cookieStr += ";" + cookie;
+            }
+            cookieHeaders.set("Cookie",cookieStr);
+            this.httpHeaders = new HttpEntity<String>(cookieHeaders);
+
+            String jenkinURL = this.settings.getSessionAuthURL();
+            LOG.info(" Jenkin URL " + jenkinURL);
+            ResponseEntity<String> jenkinResponse = this.rest.exchange(jenkinURL, HttpMethod.GET, this.httpHeaders, String.class);
+       //     LOG.info(jenkinResponse.getBody());
+
+
+
+/*            String jenkinsAuthUrl = settings.get;
+            LOG.info(" Jenkins Auth URL " + jenkinsAuthUrl);
+            ResponseEntity<String> sonarAuthResponse = this.rest.exchange(jenkinsAuthUrl, HttpMethod.GET, this.httpHeaders, String.class);
+            LOG.info(sonarAuthResponse.getBody());*/
+
+
+        }
+        catch(RestClientException ex){
+          //  LOG.error(ex);
+            ex.printStackTrace();
+            throw ex;
+        }
+    }
+
+
 
     @Override
     public Map<HudsonJob, Map<jobData, Set<BaseModel>>> getInstanceJobs(String instanceUrl) {
         LOG.debug("Enter getInstanceJobs");
         //Map<HudsonJob, Set<Build>> result = new LinkedHashMap<>();
         Map<HudsonJob, Map<jobData, Set<BaseModel>>> result = new LinkedHashMap<>();
-        
+
+        doSSO();
         int jobsCount = getJobsCount(instanceUrl);
         LOG.debug("Number of jobs " + jobsCount);
         
@@ -647,15 +758,31 @@ public class DefaultHudsonClient implements HudsonClient {
         }
         // Basic Auth only.
         if (StringUtils.isNotEmpty(userInfo)) {
-            return rest.exchange(thisuri, HttpMethod.GET,
+            /*return rest.exchange(thisuri, HttpMethod.GET,
                     new HttpEntity<>(createHeaders(userInfo)),
+                    String.class);*/
+            return rest.exchange(thisuri, HttpMethod.GET, this.httpHeaders,
                     String.class);
         } else {
-            return rest.exchange(thisuri, HttpMethod.GET, null,
+            return rest.exchange(thisuri, HttpMethod.GET, this.httpHeaders,
                     String.class);
         }
 
     }
+    private HttpHeaders createHeaders(String username, String password){
+        HttpHeaders headers = new HttpHeaders();
+        if (username != null && !username.isEmpty() &&
+                password != null && !password.isEmpty()) {
+            String auth = username + ":" + password;
+            byte[] encodedAuth = Base64.encodeBase64(
+                    auth.getBytes(Charset.forName("US-ASCII"))
+            );
+            String authHeader = "Basic " + new String(encodedAuth);
+            headers.set("Authorization", authHeader);
+        }
+        return headers;
+    }
+
     
     private String getDomain(String url) throws URISyntaxException {
         URI uri = new URI(url);

@@ -17,11 +17,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestOperations;
 
@@ -36,13 +35,15 @@ import java.util.List;
 public class DefaultSonar6Client implements SonarClient {
     private static final Log LOG = LogFactory.getLog(DefaultSonar6Client.class);
 
-    private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&ps=10000";
+    private static final String URL_RESOURCES = "/api/components/search?qualifiers=TRK&ps=10000&q=com.att.idp";
+    //private static final String URL_RESOURCES="/api/projects/index?format=json";
     private static final String URL_RESOURCE_DETAILS = "/api/measures/component?format=json&componentId=%s&metricKeys=%s&includealerts=true";
     private static final String URL_PROJECT_ANALYSES = "/api/project_analyses/search?project=%s";
     private static final String URL_QUALITY_PROFILES = "/api/qualityprofiles/search";
+    private static final String URL_QUALITY_PROFILE = "/api/qualityprofiles/projects?key=";
     private static final String URL_QUALITY_PROFILE_PROJECT_DETAILS = "/api/qualityprofiles/projects?key=";
     private static final String URL_QUALITY_PROFILE_CHANGES = "/api/qualityprofiles/changelog?profileKey=";
-
+    private static final String URL_QUALITY_GATES = "/api/qualitygates/search?gateId=10440&gateId=";
 
 
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
@@ -58,15 +59,37 @@ public class DefaultSonar6Client implements SonarClient {
     private static final String EVENTS = "events";
 
     private final RestOperations rest;
-    private final HttpEntity<String> httpHeaders;
+    private  HttpEntity<String> httpHeaders;
 
     private static final String MINUTES_FORMAT = "%smin";
     private static final String HOURS_FORMAT = "%sh";
     private static final String DAYS_FORMAT = "%sd";
     private static final int HOURS_IN_DAY = 8;
 
+
+    private MultiValueMap<String, String> map= new LinkedMultiValueMap<String, String>();
+    private String ssoURL="";
+    private String successURL="";
+    private String loginInitURL="";
+    private String sessionInitURL="";
+    private String sessionAuthURL="";
+
+
     @Autowired
     public DefaultSonar6Client(Supplier<RestOperations> restOperationsSupplier, SonarSettings settings) {
+
+        map.add("authmethod", "on");
+        map.add("userid", settings.getUsername());
+        map.add("username", settings.getUsername());
+        map.add("password", settings.getPassword());
+        map.add("login-form-type", "pwd");
+        map.add("winauthtype", "once");
+        ssoURL = settings.getSsoURL();
+        successURL = settings.getSuccessURL();
+        sessionInitURL=settings.getSesionInitURL();
+        sessionAuthURL=settings.getSessionAuthURL();
+        loginInitURL = settings.getSonarLoginInitURL();
+
         this.httpHeaders = new HttpEntity<>(
                 this.createHeaders(settings.getUsername(), settings.getPassword())
         );
@@ -74,10 +97,67 @@ public class DefaultSonar6Client implements SonarClient {
     }
 
     @Override
+    public List<String> retrieveGateAndProjectAssociation(String instanceUrl,String qualityGate) throws ParseException{
+        List<String> projects = new ArrayList<>();
+        String url = instanceUrl + URL_QUALITY_GATES + qualityGate;
+        LOG.info(" Quality Gate " + url);
+        try {
+            JSONArray associatedProjects = this.parseAsArray(url, "results");
+            if (!CollectionUtils.isEmpty(associatedProjects)) {
+                for (Object project : associatedProjects) {
+                    JSONObject projectJson = (JSONObject) project;
+                    String projectName = (String) projectJson.get("name");
+                    projects.add(projectName);
+                }
+                return projects;
+            }
+            return null;
+        } catch (ParseException e) {
+            LOG.error("Could not parse response from: " + url, e);
+            throw e;
+        } catch (RestClientException rce) {
+            LOG.error(rce);
+            LOG.info(" Quality Gate " + url);
+            throw rce;
+        }
+    }
+
+    @Override
+    public List<String> getProfileProjects(String instanceUrl,String qualityProfile) throws ParseException {
+        if(qualityProfile == null) {
+            return null;
+        }
+
+        String url = instanceUrl + URL_QUALITY_PROFILE + qualityProfile;
+        LOG.info(" Quality Profile " + url);
+        List<String> projects = new ArrayList<>();
+        try {
+            JSONArray qualityProfileData = parseAsArray(url, "results");
+            if (!CollectionUtils.isEmpty(qualityProfileData)) {
+                for (Object project : qualityProfileData) {
+                    JSONObject projectJson = (JSONObject) project;
+                    String projectName = (String) projectJson.get("name");
+                    projects.add(projectName);
+                }
+                return projects;
+            }
+            return qualityProfileData;
+        } catch (ParseException e) {
+            LOG.error("Could not parse response from: " + url, e);
+            throw e;
+        } catch (RestClientException rce) {
+            LOG.error(rce);
+            LOG.info(" Quality Profile " + url);
+            throw rce;
+        }
+
+    }
+
+    @Override
     public List<SonarProject> getProjects(String instanceUrl) {
         List<SonarProject> projects = new ArrayList<>();
         String url = instanceUrl + URL_RESOURCES;
-
+        doSSO();
         try {
             String key = "components";
             for (Object obj : parseAsArray(url, key)) {
@@ -87,6 +167,9 @@ public class DefaultSonar6Client implements SonarClient {
                 project.setInstanceUrl(instanceUrl);
                 project.setProjectId(str(prjData, ID));
                 project.setProjectName(str(prjData, NAME));
+                //project.setProjectId(str(prjData, ID));
+                //project.setProjectName(str(prjData, NAME));
+               // project.setProjectName(str(prjData,"nm"));
                 projects.add(project);
             }
 
@@ -215,9 +298,17 @@ public class DefaultSonar6Client implements SonarClient {
     private JSONArray parseAsArray(String url, String key) throws ParseException {
         ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
         JSONParser jsonParser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+        Object jsonJavaObject = jsonParser.parse(response.getBody());
+        JSONArray jsonArray = null;
+        if(jsonJavaObject != null && jsonJavaObject instanceof  JSONArray){
+            jsonArray = (JSONArray) jsonJavaObject;
+        }
+        else {
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+            jsonArray = (JSONArray) jsonObject.get(key);
+        }
         LOG.debug(url);
-        return (JSONArray) jsonObject.get(key);
+        return jsonArray;
     }
 
     private long timestamp(JSONObject json, String key) {
@@ -333,5 +424,63 @@ public class DefaultSonar6Client implements SonarClient {
             headers.set("Authorization", authHeader);
         }
         return headers;
+    }
+
+
+    public void doSSO() throws RestClientException {
+
+        try{
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+            String sso_url = ssoURL; //  "https://www.e-access.att.com/pkmslogin.form";
+            HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+            ResponseEntity<String> response = this.rest.postForEntity( sso_url, request , String.class );
+            String PD_ID= "";
+            //LOG.info(response.getBody());
+
+            String successUrl = successURL; //"https://www.e-access.att.com/empsvcs/hrpinmgt/pagSuccess/";
+            ResponseEntity<String> successResponse = this.rest.exchange(successUrl, HttpMethod.GET, this.httpHeaders, String.class);
+            //LOG.info("cookie response " + successResponse.getBody());
+
+            // Get Cookies
+            if(successResponse != null && successResponse.getHeaders().containsKey("Set-Cookie")) {
+                List<String> cookies = successResponse.getHeaders().get("Set-Cookie");
+                HttpHeaders cookieHeaders = new HttpHeaders();
+                for(String cookie : cookies){
+                    LOG.info("cookie name " + cookie);
+                    if(cookie.startsWith("PD-ID")){
+                        String tempStr = cookie;
+                        PD_ID = tempStr.replace("PD-ID=","");
+                    }
+                    String[] temp = cookie.split("=");
+                    if(temp != null && temp.length >=1){
+                        cookieHeaders.set(temp[0],temp[1]);
+                    }
+                }
+                this.httpHeaders = new HttpEntity<String>(cookieHeaders);
+            }
+
+            String sonarInitUrl = loginInitURL +PD_ID; //  "http://sonar.it.att.com/sessions/new?loginflag=true&failoverCookie="+PD_ID;
+            LOG.info(" Login Init URL " + sonarInitUrl);
+            ResponseEntity<String> sonarInitResponse = this.rest.exchange(sonarInitUrl, HttpMethod.GET, this.httpHeaders, String.class);
+            LOG.info(sonarInitResponse.getBody());
+
+            String sonarSessionUrl = sessionInitURL; //  "http://sonar.it.att.com/sessions/new?loginflag=true&failoverCookie="+PD_ID;
+            LOG.info(" Session Init URL " + sonarSessionUrl);
+            ResponseEntity<String> sonarSessionResponse = this.rest.exchange(sonarSessionUrl, HttpMethod.GET, this.httpHeaders, String.class);
+            LOG.info(sonarSessionResponse.getBody());
+
+            String sonarAuthUrl = sessionAuthURL; //  "http://sonar.it.att.com/sessions/new?loginflag=true&failoverCookie="+PD_ID;
+            LOG.info(" Sonar Auth URL " + sonarAuthUrl);
+            ResponseEntity<String> sonarAuthResponse = this.rest.exchange(sonarAuthUrl, HttpMethod.GET, this.httpHeaders, String.class);
+            LOG.info(sonarAuthResponse.getBody());
+
+
+        }
+        catch(RestClientException ex){
+            LOG.error(ex);
+            throw ex;
+        }
     }
 }

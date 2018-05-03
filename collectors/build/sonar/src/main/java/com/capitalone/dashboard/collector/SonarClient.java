@@ -13,7 +13,9 @@ public interface SonarClient {
     List<SonarProject> getProjects(String instanceUrl);
     CodeQuality currentCodeQuality(SonarProject project, String metrics);
     JSONArray getQualityProfiles(String instanceUrl) throws ParseException;
+    List<String> getProfileProjects(String instanceUrl,String qualityProfile) throws ParseException;
     List<String> retrieveProfileAndProjectAssociation(String instanceUrl,String qualityProfile) throws ParseException;
-    JSONArray getQualityProfileConfigurationChanges(String instanceUrl,String qualityProfile) throws ParseException; 
+    List<String> retrieveGateAndProjectAssociation(String instanceUrl,String qualityGate) throws ParseException;
+    JSONArray getQualityProfileConfigurationChanges(String instanceUrl,String qualityProfile) throws ParseException;
 
 }

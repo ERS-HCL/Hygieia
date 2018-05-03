@@ -18,6 +18,76 @@ public class SonarSettings {
     private List<Double> versions;
     private List<String> metrics;
 
+    public String getSsoURL() {
+        return ssoURL;
+    }
+
+    public void setSsoURL(String ssoURL) {
+        this.ssoURL = ssoURL;
+    }
+
+    public String getSuccessURL() {
+        return successURL;
+    }
+
+    public void setSuccessURL(String successURL) {
+        this.successURL = successURL;
+    }
+
+    public String getSonarLoginInitURL() {
+        return sonarLoginInitURL;
+    }
+
+    public void setSonarLoginInitURL(String sonarLoginInitURL) {
+        this.sonarLoginInitURL = sonarLoginInitURL;
+    }
+
+    private String ssoURL;
+    private String successURL;
+    private String sonarLoginInitURL;
+
+    public String getSesionInitURL() {
+        return sesionInitURL;
+    }
+
+    public void setSesionInitURL(String sesionInitURL) {
+        this.sesionInitURL = sesionInitURL;
+    }
+
+    public String getSessionAuthURL() {
+        return sessionAuthURL;
+    }
+
+    public void setSessionAuthURL(String sessionAuthURL) {
+        this.sessionAuthURL = sessionAuthURL;
+    }
+
+    private String sesionInitURL;
+    private String sessionAuthURL;
+
+
+
+
+    public String getqProfile() {
+        return qProfile;
+    }
+
+    public void setqProfile(String qProfile) {
+        this.qProfile = qProfile;
+    }
+
+    public String getqGate() {
+        return qGate;
+    }
+
+    public void setqGate(String qGate) {
+        this.qGate = qGate;
+    }
+
+    private String qProfile;
+    private String qGate;
+
+
     public String getCron() {
         return cron;
     }

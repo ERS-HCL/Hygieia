@@ -161,10 +161,15 @@ public class GitCollectorTask extends CollectorTask<Collector> {
             commitCount += newCommits.size();
 
             repo.setLastUpdateTime(Calendar.getInstance().getTime());
+            //getRequiredApproverList
+            //repo.setRequiredApprovers(getRequiredApproverList());
+
+
             if (!commits.isEmpty()) {
                 // It appears that the first commit in the list is the HEAD of the branch
                 repo.setLastUpdateCommit(commits.get(0).getScmRevisionNumber());
             }
+
 
             gitRepoRepository.save(repo);
 
@@ -175,6 +180,8 @@ public class GitCollectorTask extends CollectorTask<Collector> {
 
         log("Finished", start);
     }
+
+
 
     @SuppressWarnings("unused")
     private Date lastUpdated(GitRepo repo) {

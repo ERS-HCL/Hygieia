@@ -116,16 +116,14 @@
             <ruleset>${project.parent.basedir}/pmd.xml</ruleset>
           </rulesets>
         </configuration>
-        <executions>
+        <!--executions>
           <execution>
             <phase>validate</phase>
             <goals>
               <goal>check</goal>
-              <!-- disabled for now: -->
-              <!--<goal>cpd-check</goal>-->
             </goals>
           </execution>
-        </executions>
+        </executions-->
       </plugin>
     </plugins>
     <pluginManagement>
