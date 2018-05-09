@@ -240,6 +240,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 			String sso_url =  "https://" +  settings.getHost() + "/j_atl_security_check";
 			HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 			ResponseEntity<String> response = this.restOperations.postForEntity( sso_url, request , String.class );
+			if(response != null)
 			LOG.info(response.getBody());
 
 			//String repoSettingUrl = "https://" +  settings.getHost() + "/" + settings.getApi() ;
@@ -251,8 +252,10 @@ public class DefaultBitbucketServerClient implements GitClient {
 
 				String path = queryUri.getPath();
 				String settings_url = "https://" +  settings.getHost() + "/" + path.replace("commits","settings/pull-requests");
+				if(settings_url != null)
 				LOG.info(" Pull Request Settings " + settings_url);
 				ResponseEntity<String> settings_response = this.restOperations.getForEntity( settings_url, String.class,request );
+				if(settings_response != null)
 				LOG.info(" Pull settings reponse " + settings_response.toString());
 				JSONObject jsonParentObject = paresAsObject(settings_response);
 				if(jsonParentObject != null && jsonParentObject.containsKey("requiredApprovers")){
@@ -302,12 +305,16 @@ public class DefaultBitbucketServerClient implements GitClient {
 	}
 	
 	private JSONObject paresAsObject(ResponseEntity<String> response) {
-		try {
-			return (JSONObject) new JSONParser().parse(response.getBody());
-		} catch (ParseException pe) {
-			LOG.error(pe.getMessage());
+
+		if(response != null && response.getBody() != null ) {
+			try {
+				return (JSONObject) new JSONParser().parse(response.getBody());
+			} catch (ParseException pe) {
+				LOG.error(pe.getMessage());
+			}
+			return new JSONObject();
 		}
-		return new JSONObject();
+		return null;
 	}
 
 	private String str(JSONObject json, String key) {

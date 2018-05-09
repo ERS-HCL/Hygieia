@@ -87,9 +87,15 @@ public class TestConfig {
     }
 
     @Bean
-    public BinaryArtifactService artifactService() {
+    public BinaryArtifactService artifactService1() {
         return Mockito.mock(BinaryArtifactService.class);
     }
+
+    @Bean
+    public BinaryDefectService artifactService() {
+        return Mockito.mock(BinaryDefectService.class);
+    }
+
 
     @Bean
     public PipelineService pipelineService() {

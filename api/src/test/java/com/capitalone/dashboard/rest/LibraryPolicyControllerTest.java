@@ -12,6 +12,7 @@ import com.capitalone.dashboard.model.LibraryPolicyType;
 import com.capitalone.dashboard.request.CodeQualityRequest;
 import com.capitalone.dashboard.request.LibraryPolicyRequest;
 import com.capitalone.dashboard.service.BinaryArtifactService;
+import com.capitalone.dashboard.service.BinaryDefectService;
 import com.capitalone.dashboard.service.LibraryPolicyService;
 import org.bson.types.ObjectId;
 import org.junit.Before;

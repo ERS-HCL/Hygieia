@@ -1,12 +1,11 @@
 package com.capitalone.dashboard.rest;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.BinaryArtifact;
 import com.capitalone.dashboard.model.BinaryDefect;
 import com.capitalone.dashboard.model.DataResponse;
 import com.capitalone.dashboard.request.*;
-import com.capitalone.dashboard.service.BinaryArtifactService;
 import com.capitalone.dashboard.service.BinaryDefectService;
+import com.capitalone.dashboard.service.BinaryDefectServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,11 +22,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 public class BinaryDefectController {
 
-    private final BinaryDefectService artifactService;
-
     @Autowired
-    public BinaryDefectController(BinaryDefectService artifactService) {
-        this.artifactService = artifactService;
+    private  BinaryDefectService artifactService;
+
+   // @Autowired
+    public BinaryDefectController() {
+
     }
 
     @RequestMapping(value = "/defect", method = GET, produces = APPLICATION_JSON_VALUE)

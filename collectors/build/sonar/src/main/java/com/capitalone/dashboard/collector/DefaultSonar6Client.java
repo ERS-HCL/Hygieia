@@ -155,22 +155,25 @@ public class DefaultSonar6Client implements SonarClient {
 
     @Override
     public List<SonarProject> getProjects(String instanceUrl) {
-        List<SonarProject> projects = new ArrayList<>();
+        List<SonarProject> projects = new ArrayList<SonarProject>();
         String url = instanceUrl + URL_RESOURCES;
         doSSO();
         try {
             String key = "components";
-            for (Object obj : parseAsArray(url, key)) {
-                JSONObject prjData = (JSONObject) obj;
+            JSONArray jsonArray = parseAsArray(url, key);
+            if(jsonArray != null && jsonArray instanceof  JSONArray ) {
+                for (Object obj : jsonArray) {
+                    JSONObject prjData = (JSONObject) obj;
 
-                SonarProject project = new SonarProject();
-                project.setInstanceUrl(instanceUrl);
-                project.setProjectId(str(prjData, ID));
-                project.setProjectName(str(prjData, NAME));
-                //project.setProjectId(str(prjData, ID));
-                //project.setProjectName(str(prjData, NAME));
-               // project.setProjectName(str(prjData,"nm"));
-                projects.add(project);
+                    SonarProject project = new SonarProject();
+                    project.setInstanceUrl(instanceUrl);
+                    project.setProjectId(str(prjData, ID));
+                    project.setProjectName(str(prjData, NAME));
+                    //project.setProjectId(str(prjData, ID));
+                    //project.setProjectName(str(prjData, NAME));
+                    // project.setProjectName(str(prjData,"nm"));
+                    projects.add(project);
+                }
             }
 
         } catch (ParseException e) {
@@ -298,14 +301,16 @@ public class DefaultSonar6Client implements SonarClient {
     private JSONArray parseAsArray(String url, String key) throws ParseException {
         ResponseEntity<String> response = rest.exchange(url, HttpMethod.GET, this.httpHeaders, String.class);
         JSONParser jsonParser = new JSONParser();
-        Object jsonJavaObject = jsonParser.parse(response.getBody());
         JSONArray jsonArray = null;
-        if(jsonJavaObject != null && jsonJavaObject instanceof  JSONArray){
-            jsonArray = (JSONArray) jsonJavaObject;
-        }
-        else {
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
-            jsonArray = (JSONArray) jsonObject.get(key);
+        if(response != null && response.getBody() != null ) {
+            Object jsonJavaObject = jsonParser.parse(response.getBody());
+
+            if (jsonJavaObject != null && jsonJavaObject instanceof JSONArray) {
+                jsonArray = (JSONArray) jsonJavaObject;
+            } else {
+                JSONObject jsonObject = (JSONObject) jsonParser.parse(response.getBody());
+                jsonArray = (JSONArray) jsonObject.get(key);
+            }
         }
         LOG.debug(url);
         return jsonArray;
@@ -464,17 +469,20 @@ public class DefaultSonar6Client implements SonarClient {
             String sonarInitUrl = loginInitURL +PD_ID; //  "http://sonar.it.att.com/sessions/new?loginflag=true&failoverCookie="+PD_ID;
             LOG.info(" Login Init URL " + sonarInitUrl);
             ResponseEntity<String> sonarInitResponse = this.rest.exchange(sonarInitUrl, HttpMethod.GET, this.httpHeaders, String.class);
-            LOG.info(sonarInitResponse.getBody());
+            if(sonarInitResponse != null)
+               LOG.info(sonarInitResponse.getBody());
 
             String sonarSessionUrl = sessionInitURL; //  "http://sonar.it.att.com/sessions/new?loginflag=true&failoverCookie="+PD_ID;
             LOG.info(" Session Init URL " + sonarSessionUrl);
             ResponseEntity<String> sonarSessionResponse = this.rest.exchange(sonarSessionUrl, HttpMethod.GET, this.httpHeaders, String.class);
-            LOG.info(sonarSessionResponse.getBody());
+            if(sonarSessionResponse != null)
+               LOG.info(sonarSessionResponse.getBody());
 
             String sonarAuthUrl = sessionAuthURL; //  "http://sonar.it.att.com/sessions/new?loginflag=true&failoverCookie="+PD_ID;
             LOG.info(" Sonar Auth URL " + sonarAuthUrl);
             ResponseEntity<String> sonarAuthResponse = this.rest.exchange(sonarAuthUrl, HttpMethod.GET, this.httpHeaders, String.class);
-            LOG.info(sonarAuthResponse.getBody());
+            if(sonarAuthResponse != null)
+                LOG.info(sonarAuthResponse.getBody());
 
 
         }

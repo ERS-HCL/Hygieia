@@ -109,8 +109,14 @@ public class TestAuthConfig {
     }
 
     @Bean
-    public BinaryArtifactService artifactService() {
-        return Mockito.mock(BinaryArtifactService.class);
+    public BinaryArtifactService artifactService1() {
+        return Mockito.mock(
+                BinaryArtifactService.class);
+    }
+
+    @Bean
+    public BinaryDefectService artifactService() {
+        return Mockito.mock(BinaryDefectService.class);
     }
 
     @Bean

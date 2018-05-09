@@ -167,41 +167,40 @@ public class DefaultHudsonClient implements HudsonClient {
             ResponseEntity<String> SessionResponse = this.rest.exchange(SessionUrl, HttpMethod.GET, this.httpHeaders, String.class);
      //       LOG.info(SessionResponse.getBody());
 
-            List<String> cookies = SessionResponse.getHeaders().get("Set-Cookie");
-            HttpHeaders cookieHeaders = new HttpHeaders();
-            String cookieStr="";
-            for(String cookie : cookies){
-                LOG.info("cookie name " + cookie);
-                cookieStr += ";" + cookie;
+            if(SessionResponse != null && SessionResponse.getHeaders() != null &&
+                    SessionResponse.getHeaders().containsKey("Set-Cookie")) {
+                List<String> cookies = SessionResponse.getHeaders().get("Set-Cookie");
+                HttpHeaders cookieHeaders = new HttpHeaders();
+                String cookieStr = "";
+                for (String cookie : cookies) {
+                    LOG.info("cookie name " + cookie);
+                    cookieStr += ";" + cookie;
+                }
+                cookieHeaders.set("Cookie", cookieStr);
+                this.httpHeaders = new HttpEntity<String>(cookieHeaders);
             }
-            cookieHeaders.set("Cookie",cookieStr);
-            this.httpHeaders = new HttpEntity<String>(cookieHeaders);
 
             String SessionUrl1 = this.settings.getSesionInitURL();
             LOG.info(" Session Init URL " + SessionUrl);
             ResponseEntity<String> SessionResponse1 = this.rest.exchange(SessionUrl1, HttpMethod.GET, this.httpHeaders, String.class);
      //       LOG.info(SessionResponse1.getBody());
 
-            cookies = SessionResponse1.getHeaders().get("Set-Cookie");
-            cookieStr = "";
-            for(String cookie : cookies){
-                LOG.info("cookie name " + cookie);
-                cookieStr += ";" + cookie;
+            if(SessionResponse1 != null && SessionResponse1.getHeaders() != null &&
+                    SessionResponse1.getHeaders().containsKey("Set-Cookie")) {
+                List<String> cookies  = SessionResponse1.getHeaders().get("Set-Cookie");
+                String cookieStr = "";
+                HttpHeaders cookieHeaders = new HttpHeaders();
+                for (String cookie : cookies) {
+                    LOG.info("cookie name " + cookie);
+                    cookieStr += ";" + cookie;
+                }
+                cookieHeaders.set("Cookie", cookieStr);
+                this.httpHeaders = new HttpEntity<String>(cookieHeaders);
             }
-            cookieHeaders.set("Cookie",cookieStr);
-            this.httpHeaders = new HttpEntity<String>(cookieHeaders);
 
             String jenkinURL = this.settings.getSessionAuthURL();
             LOG.info(" Jenkin URL " + jenkinURL);
             ResponseEntity<String> jenkinResponse = this.rest.exchange(jenkinURL, HttpMethod.GET, this.httpHeaders, String.class);
-       //     LOG.info(jenkinResponse.getBody());
-
-
-
-/*            String jenkinsAuthUrl = settings.get;
-            LOG.info(" Jenkins Auth URL " + jenkinsAuthUrl);
-            ResponseEntity<String> sonarAuthResponse = this.rest.exchange(jenkinsAuthUrl, HttpMethod.GET, this.httpHeaders, String.class);
-            LOG.info(sonarAuthResponse.getBody());*/
 
 
         }
