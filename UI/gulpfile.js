@@ -100,7 +100,7 @@ function server(ghostMode) {
       /*
        * Location of your backend (API) server--default port 8080
        */
-      var proxyTarget = config.api || 'http://localhost:8080';
+      var proxyTarget = config.api || 'http://localhost:8181';
 
       var proxy = httpProxy.createProxyServer({
           target: proxyTarget

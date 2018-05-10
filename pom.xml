@@ -230,6 +230,7 @@
         <module>api</module>
         <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
+        <module>collectors/tdp/defect</module>
         <module>collectors/build/bamboo</module>
         <module>collectors/build/jenkins</module>
         <module>collectors/build/jenkins-cucumber</module>
