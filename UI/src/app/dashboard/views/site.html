@@ -9,11 +9,12 @@
             <div class="widget-modal-body">
                 <div class="text-center">
                     <div class="btn-group dashboard-type-list" role="group" aria-label="Basic example">
-                        <button type="button"
+                        <button style="width:100%;" type="button"
                                 class="btn btn-secondary"
                                 ng-class="{'btn-info': ctrl.dashboardType == undefined}"
                                 ng-click="ctrl.setType()">All dashboards</button>
 
+                        <!--
                         <button type="button"
                                 class="btn btn-secondary"
                                 ng-repeat="item in ctrl.dashboardTypes"
@@ -23,6 +24,7 @@
 
                             {{item.name}} dashboards
                         </button>
+                        -->
                     </div>
                 </div>
 
@@ -52,8 +54,8 @@
                         </div>
 
                     </div>
-                    <div class="col-sm-8 col-sm-pull-4">
-                        <div ng-show="ctrl.showAuthentication" id="myDashboardsSection">
+                    <div class="col-sm-8 col-sm-pull-4"> <!-- ctrl.showAuthentication -->
+                        <div ng-show="false" id="myDashboardsSection">
                             <div class="gap">
                                     <div class="text-2x">My Dashboards <span class="label label-default"></span></div>
 
