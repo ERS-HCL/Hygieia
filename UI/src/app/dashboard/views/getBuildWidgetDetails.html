@@ -1,0 +1,31 @@
+<widget-modal widget-modal-title="{{ctrl.allWidgetDetails.Builds.widgetModalTitle}}">
+    <form name="BuildwidgetDetails" class="form widgetDetailsModal" novalidate>
+        <table class="table">
+            <!-- <label class="modal-label">{{ctrl.allWidgetDetails.Builds.widgetName}}</label> -->
+            <caption class="modal-label">{{ctrl.allWidgetDetails.Builds.widgetName}}</caption>
+            <thead>
+            <tr>
+                <th>Recent Build Time</th>
+                <th>Next Recent Build</th>
+                <th>5 Recent Build</th>
+                <th>Mean Time to Resolve</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Build 123
+                    Success 10 Mins
+                </td>
+                <td>Build 120 
+                    Success 12 Mins
+                </td>
+                <td>Build 122 Failed 10 Mins
+                    Build 121 Failed 10 Mins
+                    Build 120 Success 12 Mins
+                </td>
+                <td>1 Hour</td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</widget-modal>
