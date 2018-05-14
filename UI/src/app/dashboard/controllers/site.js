@@ -17,7 +17,15 @@
         // public variables
         ctrl.search = '';
         ctrl.myadmin = '';
-
+        //For Getting All Widget Details
+        ctrl.allWidgetDetails = {
+            Builds:{},
+            Defects:{},
+            Commits:{}
+        };
+        // ctrl.allWidgetDetails.Builds = widgetBuildsItems;
+        // ctrl.allWidgetDetails.Defects = widgetDefectsItems;
+        // ctrl.allWidgetDetails.Commits = widgetCommitsItems;
         ctrl.username = userService.getUsername();
         ctrl.showAuthentication = userService.isAuthenticated();
 
@@ -41,6 +49,7 @@
         ctrl.getTotalItemsMyDash = getTotalItemsMyDash;
         ctrl.getPageSize = getPageSize;
         ctrl.filterByTitle = filterByTitle;
+        ctrl.getCurrentWidgetDetails = getCurrentWidgetDetails;
 
         if (userService.isAdmin()) {
             ctrl.myadmin = true;
@@ -106,9 +115,76 @@
                 controllerAs: 'ctrl'
             });
         }
+        //getting widget details
+        function getCurrentWidgetDetails(serviceName,widgetName,widgetData,dashboardId){
+            console.log("current Widget  : "+serviceName+" "+widgetName+" "+widgetData+" "+dashboardId);
+            if(widgetData !== undefined){
+                switch(widgetName){
+                    case 'Build':
+                        ctrl.allWidgetDetails.Builds.widgetName = widgetName;
+                        ctrl.allWidgetDetails.Builds.serviceName = serviceName;
+                        ctrl.allWidgetDetails.Builds.widgetModalTitle = widgetName+' '+serviceName;
+                        //$rootScope.allWidgetDetailsDash = ctrl.allWidgetDetails;
+                        //open modal for getting widget details
+                        $uibModal.open({
+                            templateUrl:'app/dashboard/views/getBuildWidgetDetails.html',
+                            controller: 'DashboardWidgetController',
+                            controllerAs: 'ctrl',
+                            size:'lg',
+                            resolve: {
+                                dashboardWidgetItem: function() {
+                                    return ctrl.allWidgetDetails;
+                                }
+                            }
+                        });
+                        break;
+                    case 'Defect':
+                        ctrl.allWidgetDetails.Defects.widgetName = widgetName;
+                        ctrl.allWidgetDetails.Defects.serviceNAme = serviceName;
+                        ctrl.allWidgetDetails.Defects.widgetModalTitle = widgetName+' '+serviceName;
+                        //open modal for getting widget details
+                        $uibModal.open({
+                            templateUrl:'app/dashboard/views/getDefectWidgetDetails.html',
+                            controller: 'DashboardWidgetController',
+                            controllerAs: 'ctrl',
+                            size:'lg',
+                            resolve: {
+                                dashboardWidgetItem: function() {
+                                    return ctrl.allWidgetDetails;
+                                }
+                            }
+                        });
+                        break;
+                    case 'Commit':
+                        ctrl.allWidgetDetails.Commits.widgetName = widgetName;
+                        ctrl.allWidgetDetails.Commits.serviceName = serviceName;
+                        ctrl.allWidgetDetails.Commits.widgetModalTitle = widgetName+' '+serviceName;
+                        //open modal for getting widget details
+                        $uibModal.open({
+                            templateUrl:'app/dashboard/views/getCommitWidgetDetails.html',
+                            controller: 'DashboardWidgetController',
+                            controllerAs: 'ctrl',
+                            size:'lg',
+                            resolve: {
+                                dashboardWidgetItem: function() {
+                                    return ctrl.allWidgetDetails;
+                                }
+                            }
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            }else{
+                $location.path('/dashboard/' + dashboardId);
+            }
+           
+            
+        }
 
         function editDashboard(item,size)
         {
+            console.log("editDashboard is item ", item);
             // open modal for renaming dashboard
             var modalInstance = $uibModal.open({
                 templateUrl: 'app/dashboard/views/editDashboard.html',
@@ -136,6 +212,7 @@
 
         function processDashboardResponse(data) {
             ctrl.dashboards = paginationWrapperService.processDashboardResponse(data, ctrl.dashboardType);
+            console.log("dashboards value is : ", ctrl.dashboards);
         }
 
         function processDashboardFilterResponse(data) {
@@ -148,6 +225,7 @@
 
         function processMyDashboardResponse(mydata) {
             ctrl.mydash = paginationWrapperService.processMyDashboardResponse(mydata, ctrl.dashboardType);
+            console.log("mydash data is : ",ctrl.mydash);
         }
 
         function processFilterMyDashboardResponse(mydata) {
@@ -234,4 +312,5 @@
             });
         }
     }
+    
 })();

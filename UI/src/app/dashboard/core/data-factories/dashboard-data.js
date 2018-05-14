@@ -88,7 +88,7 @@
 
         //gets component from componentId
         function getComponent(componentId){
-            return getPromise(HygieiaConfig.local ? testOwnedRoute : myComponentRoute+ '/' + componentId);
+            return getPromise(HygieiaConfig.local ? testOwnedRoute : dashboardRoute+ '/' + componentId);
         }
 
         function owners(id) {

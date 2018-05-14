@@ -37,3 +37,43 @@
         margin-bottom: 0;
     }
 }
+
+#widgetDetailsModal{
+    label {
+        background-color: rgb(152, 151, 221) !important;
+    }
+    th {
+        background-color: rgb(234, 170, 170) !important;
+    }
+
+}
+
+.widgetDetailsModal {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	border-collapse: collapse;
+    width: 100%;
+    label {
+        background-color: rgb(152, 151, 221);
+    }
+	td {
+		border: 1px solid #ddd;
+		padding: 8px;
+	}
+	th {
+		border: 1px solid #ddd;
+		padding: 8px;
+		padding-top: 12px;
+		padding-bottom: 12px;
+		text-align: left;
+		background-color: rgb(234, 170, 170);
+		// color: white;
+	}
+	tr {
+		&:nth-child(even) {
+			background-color: #f2f2f2;
+		}
+		&:hover {
+			background-color: #ddd;
+		}
+	}
+}

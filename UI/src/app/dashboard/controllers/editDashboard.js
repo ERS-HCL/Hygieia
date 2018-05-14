@@ -32,7 +32,7 @@
     function EditDashboardController($uibModalInstance, dashboardData, userData, userService, dashboardItem, $scope, $q, cmdbData, dashboardService,widgetManager) {
 
         var ctrl = this;
-
+        console.log("i am in EditDashboardController : ",dashboardItem);
         // public variables
         ctrl.dashboardType = dashboardItem.type;
         ctrl.configurationItemBusServ = dashboardItem.configurationItemBusServName;

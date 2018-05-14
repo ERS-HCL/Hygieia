@@ -54,8 +54,8 @@
                         </div>
 
                     </div>
-                    <div class="col-sm-8 col-sm-pull-4"> <!-- ctrl.showAuthentication -->
-                        <div ng-show="false" id="myDashboardsSection">
+                    <div class="col-sm-8 col-sm-pull-4">
+                        <!-- <div ng-show="ctrl.showAuthentication" id="myDashboardsSection">
                             <div class="gap">
                                     <div class="text-2x">My Dashboards <span class="label label-default"></span></div>
 
@@ -99,9 +99,9 @@
                                             pagination-id="myDashboard">
                                     </dir-pagination-controls>
                             </div>
-                        </div>
+                        </div> -->
 
-                        <div class="gap">
+                        <!-- <div class="gap">
                             <div class="text-2x">All Dashboards</span></div>
 
                             <div class="text-center" ng-hide="ctrl.dashboards">Loading Dashboards...</div>
@@ -130,6 +130,61 @@
                                     pagination-id="allDashboard">
                             </dir-pagination-controls >
 
+                        </div> -->
+                        <div class="gap widgetDetailsModal">
+                            <table class="table repo-summary-table">
+                                <label class="modal-label">All MicroServices Dashboards</label>
+                                <thead>
+                                <tr>
+                                    <th>Micro Service</th>
+                                    <th># Build Failures / Week</th>
+                                    <th>Mean Time to Resolve - Build Failures</th>
+                                    <th># Defects</th>
+                                    <th># Avg commits per days / Week</th>
+                                    <th># Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr
+                                dir-paginate="item in filteredDashboards = (ctrl.dashboards | filter:q | itemsPerPage: ctrl.getPageSize() | orderBy: 'name')"
+                                current-page="currentPage"
+                                total-items= ctrl.getTotalItems()
+                                >
+                                <td title="{{item.name}}"class=" clickable" ng-click="ctrl.open(item.id)">
+                              {{item.name}}</td>
+                              <td class="clickable" ng-click="ctrl.getCurrentWidgetDetails(item.name,'Build',item.totalBuildsLastWeek.DashtotalBuildsLastWeek,item.id)">{{item.totalBuildsLastWeek.DashtotalBuildsLastWeek}}<b>...</b></td>
+                              <td>1 hr</td>
+                              <td>15<b>...</b></td>
+                              <td class="clickable" ng-click="ctrl.getCurrentWidgetDetails(item.name,'Commit',item.totalCommitsLastWeek.lastSevenDaysCommitCount,item.id)">{{item.totalCommitsLastWeek.lastSevenDaysCommitCount}}<b>...</b></td>
+                              <td><span class="pull-right">
+
+
+                                <a href ng-click="ctrl.editDashboard(item,'lg')">
+                                    <span class="fa fa-lg fa-cog text-success"></span>
+                                </a>
+
+                                <a href id="deleteDashboardButton" delete-confirm title="Are you sure you want to delete?" confirm-action="ctrl.deleteDashboard(myitem)">
+                                     <span class="fa fa-lg fa-trash text-danger"></span>
+                                </a>
+                             </span></td>
+
+                                </tr>
+                                
+                                </tbody>
+                            </table>
+                            <!-- <div class="widget average-build-duration">
+                                <div class="widget-heading">
+                                    Average build duration
+                                </div>
+                                <div class="widget-body">
+                                    <chartist class="ct-chart ct-major-twelfth"
+                                              chartist-chart-type="Bar"
+                                              chartist-data="ctrl.DashbuildDurationData"
+                                              chartist-chart-options="ctrl.DashbuildDurationOptions"
+                                              chartist-events="ctrl.DashbuildDurationEvents"
+                                            ></chartist>
+                                </div>
+                            </div> -->
                         </div>
                     </div>
                 </div>

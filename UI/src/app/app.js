@@ -132,7 +132,7 @@ var localStorageSupported = (function () {
                 })
 
         })
-        .run(function ($rootScope, loginRedirectService) {
+        .run(function ($rootScope, loginRedirectService) {           
             $rootScope.$on('$locationChangeStart', function (event, nextPath, currentPath) {
                 loginRedirectService.saveCurrentPath(currentPath);
             });

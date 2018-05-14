@@ -7,8 +7,8 @@
     angular
         .module(HygieiaConfig.module)
         .service('dashboardService', dashboardService);
-    dashboardService.$inject = ['DashboardType' , 'dashboardData'];
-    function dashboardService(DashboardType, dashboardData) {
+    dashboardService.$inject = ['DashboardType' , 'dashboardData' , '$http'];
+    function dashboardService(DashboardType, dashboardData, $http) {
         var businessApplicationId;
         var businessServiceId;
         var getDashboardType = function(){
@@ -65,6 +65,15 @@
 
         this.getBusAppToolTipText = function (){
             return " A Business Application (BAP) CI is a CI Subtype in the application which supports business function (Top level)."
+        }
+        //For getting ComponentId
+        this.getCurrentComponentID = function(ID){
+            $http.get("http://localhost:3000/api/dashboard/"+ID).then(function(res){                
+                console.log("Current Component Id object ",res);
+               
+                console.log("testing : ",res.data.application.components[0].id);
+                return res.data.application.components[0].id;
+            });
         }
     }
 })();
