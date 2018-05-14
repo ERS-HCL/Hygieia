@@ -58,7 +58,7 @@
                 required />
         </form-group>
         <p class="text-danger">{{ctrl.dupErroMessage}}</p>
-        <form-group  input="configurationItemBusServ" errors="{dupBusServError: 'Existing Dashboard found for this Business Service/ Business Application combination'}">
+        <!-- form-group  input="configurationItemBusServ" errors="{dupBusServError: 'Existing Dashboard found for this Business Service/ Business Application combination'}">
               <div class="row">
                   <div class="col-xs-push-6 col-xs-12">
                       <i class="fa fa-stack-1x fa-info-circle" uib-tooltip = "{{ctrl.getBusSerToolText()}}" tooltip-trigger="focus" tooltip-placement="top" aria-hidden="true"></i>
@@ -106,7 +106,7 @@
                     </div>
                 </div>
             </div>
-        </form-group>
+        </form-group -->
 
         <div class="form-group" ng-if="ctrl.dashboardType.id == 'team'">
             <score-settings ng-model="ctrl.scoreSettings"></score-settings>
