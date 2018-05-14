@@ -116,8 +116,7 @@
             });
         }
         //getting widget details
-        function getCurrentWidgetDetails(serviceName,widgetName,widgetData,dashboardId){
-            console.log("current Widget  : "+serviceName+" "+widgetName+" "+widgetData+" "+dashboardId);
+        function getCurrentWidgetDetails(serviceName,widgetName,widgetData,dashboardId,currentItem){
             if(widgetData !== undefined){
                 switch(widgetName){
                     case 'Build':
@@ -159,6 +158,7 @@
                         ctrl.allWidgetDetails.Commits.widgetName = widgetName;
                         ctrl.allWidgetDetails.Commits.serviceName = serviceName;
                         ctrl.allWidgetDetails.Commits.widgetModalTitle = widgetName+' '+serviceName;
+                        ctrl.allWidgetDetails.Commits.totalCommitsLastWeek = currentItem.totalCommitsLastWeek;
                         //open modal for getting widget details
                         $uibModal.open({
                             templateUrl:'app/dashboard/views/getCommitWidgetDetails.html',
@@ -184,7 +184,6 @@
 
         function editDashboard(item,size)
         {
-            console.log("editDashboard is item ", item);
             // open modal for renaming dashboard
             var modalInstance = $uibModal.open({
                 templateUrl: 'app/dashboard/views/editDashboard.html',

@@ -101,9 +101,7 @@
             var dashboardsLocal = [];
 
             function getUpdatedDashboardDetails(obj) {
-                //console.log("Current id value is : ", obj.id);
                 dashboardData.getComponent(obj.id).then(function (myres) {
-                    //console.log("Current response is : ", myres);
                     var AllDashBuildsData = {};
                     var AllDashCommitsData = {};
                     //Updating Dashboard Data table details from widget
@@ -338,7 +336,7 @@
                             worker.latestBuilds(data, function (buildsToDisplay) {
                                 //$scope.$apply(function () {
                                 ctrl.DashrecentBuilds = buildsToDisplay;
-                                //console.log("ctrl.DashrecentBuilds is : ",ctrl.DashrecentBuilds);
+                                
                                 //});
                             });
 
@@ -351,7 +349,6 @@
                                 buildDurationData.labels = labels;
                                 //_(buildDurationData.series).forEach
                                 ctrl.DashbuildDurationData = buildDurationData;
-                                //console.log("ctrl.DashbuildDurationData is : ",ctrl.DashbuildDurationData);
                                 //});
                             });
 
@@ -365,11 +362,8 @@
                                 //$scope.$apply(function () {
                                 ctrl.DashtotalBuildsYesterday = data.today;
                                 ctrl.DashtotalBuildsLastWeek = data.sevenDays;
-                                //AllDashBuildsData.DashtotalBuildsLastWeek = '';
                                 AllDashBuildsData.DashtotalBuildsLastWeek = data.sevenDays;
                                 ctrl.DashtotalBuildsLastMonth = data.fourteenDays;
-                                //console.log("ctrl.DashtotalBuildsLastWeek is : ", ctrl.DashtotalBuildsLastWeek);
-                                //console.log("AllDashBuildsData.DashtotalBuildsLastWeek : ", AllDashBuildsData.DashtotalBuildsLastWeek);
                                 //});
                             });
                             //endregion
@@ -436,7 +430,6 @@
                             fourteenDays.setDate(fourteenDays.getDate() - 14);
                             thirtyDays.setDate(thirtyDays.getDate()-30);
                             fiveDays.setDate(fiveDays.getDate()-5);
-                            console.log("fiveDays setDate is : ",moment(fiveDays).format('ll'));
                 
                             var lastDayCommitCount = 0;
                             var lastDayCommitContributors = [];
@@ -454,7 +447,6 @@
                 
                             // loop through and add to counts
                             _(data).forEach(function (commit) {
-                                console.log("current Commits Data value is : ",data);
                                 if(commit.scmCommitTimestamp >= today.getTime()) {
                                     lastDayCommitCount++;
                 
@@ -463,12 +455,10 @@
                                     }
                                 }
                                 if(commit.scmCommitTimestamp >= thirtyDays.getTime()){
-                                    console.log("i am in commit.scmCommitTimestamp >= ThirtyDays.getTime() : ");
                                     lastThirtyDaysCommitCount++;
                                     if(newCommitDate.indexOf(moment(commit.scmCommitTimestamp).format('ll'))>-1){
                                         lastThirtyDaysCommitCount++;
-                                        _(lastThirtyDaysCommitDetails).forEach(function(value){                                          
-                                            console.log("Current dayscommit date is : ",value);
+                                        _(lastThirtyDaysCommitDetails).forEach(function(value){ 
                                             if(value.CommitDate === moment(commit.scmCommitTimestamp).format('ll')){                                              
                                             value.CommitsCount = lastThirtyDaysCommitCount
                                             }
@@ -482,8 +472,7 @@
                                         "CommitsCount": lastThirtyDaysCommitCount
                                     });
                                     }
-                                    //console.log("moment(commit.scmCommitTimestamp).getDate(); : ",moment(commit.scmCommitTimestamp).format('ll'));
-
+                                   
                                 }
                                 lastFiveDaysCommitDetails = lastThirtyDaysCommitDetails;
                                 lastFiveDaysCommitDetails = lastFiveDaysCommitDetails.slice((lastFiveDaysCommitDetails.length - 5), lastFiveDaysCommitDetails.length);
@@ -510,11 +499,9 @@
                             ctrl.lastSevenDaysCommitContributorCount = lastSevenDaysCommitContributors.length;
                             ctrl.lastFourteenDaysCommitCount = lastFourteenDayCommitCount;
                             ctrl.lastFourteenDaysCommitContributorCount = lastFourteenDaysCommitContributors.length;
-                            //console.log("ctrl.lastSevenDaysCommitCount is : ",ctrl.lastSevenDaysCommitCount);
                             AllDashCommitsData.lastSevenDaysCommitCount = lastSevenDayCommitCount;
                             AllDashCommitsData.lastDayCommitCount = lastDayCommitCount;
                             AllDashCommitsData.lastFiveDaysCommitDetails = lastFiveDaysCommitDetails;
-                            //console.log("lastThirtyDaysCommitDetails is :", lastThirtyDaysCommitDetails);
 
                 
                             function toMidnight(date) {
@@ -526,23 +513,18 @@
                         //Getting Repo Details End
                         switch (widgetName) {
                             case 'build':
-                                //console.log("Switch to Build");
                                 var params = {
                                     componentId: widgetCompId,
                                     numberOfDays: 15
                                 };
                                 buildData.details(params).then(function (data) {
                                     DashBuilds = data.result;
-                                    //console.log("builddata details is : ", DashBuilds);
                                     buildProcessResponse(DashBuilds);
                                 });
-                                //console.log("$rootScope.DashWidgetDetails.BuildsDetails is : ",$rootScope.DashWidgetDetails.BuildsDetails);
                                 break;
                             case 'codeanalysis':
-                                //console.log("Switch to codeanalysis");
                                 break;
                             case 'repo':
-                                //console.log("Switch to repo ");
                                 var params = {
                                     componentId: widgetCompId,
                                     numberOfDays: 14
@@ -554,10 +536,8 @@
                                 });
                                 break;
                             case 'tdp':
-                                //console.log('Switch to tdp');
                                 break;
                             case 'deploy':
-                                //console.log("Switch to deploy");
                                 break;
                             default:
                                 break;
@@ -565,7 +545,6 @@
                     }
                     for (var z = 0; z < myres.activeWidgets.length; z++) {
                         updateDashboardDetailsForActiveWidgets(myres.activeWidgets[z], myres.application.components[0].id);
-                        //console.log("AllDashBuildsData is : ",AllDashBuildsData);
                         if(z===myres.activeWidgets.length-1){
                             var board = {
                                 id: obj.id,

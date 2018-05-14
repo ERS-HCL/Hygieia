@@ -13,11 +13,10 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td>12</td>
-                    <td>35</td>
-                    <td>7th May 10 Commits
-                        8th May 12 Commits
-                        9th May 12 Commits
+                    <td>{{ctrl.allWidgetDetails.Commits.totalCommitsLastWeek.lastDayCommitCount}}</td>
+                    <td>{{ctrl.allWidgetDetails.Commits.totalCommitsLastWeek.lastSevenDaysCommitCount}}</td>
+                    <td><p ng-repeat = "commitData in ctrl.allWidgetDetails.Commits.totalCommitsLastWeek.lastFiveDaysCommitDetails">{{commitData.CommitDate}} - {{commitData.CommitsCount}} Commits</p>
+                        
                     </td>
                     <td>1 Hour</td>
                 </tr>
