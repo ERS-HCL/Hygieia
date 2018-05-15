@@ -12,7 +12,7 @@
     function authInterceptor($q, $location, tokenService) {
       return {
         responseError: function (response) {
-          if (response.status === 401) {
+          if (response.status === 401 || response.status === 500 ) {
             $location.path('/login');
           }
           return $q.reject(response);
