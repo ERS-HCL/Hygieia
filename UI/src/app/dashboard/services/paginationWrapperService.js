@@ -247,7 +247,6 @@
                             function latestBuilds(data, cb) {
                                 // order by end time and limit to last 5
                                 data = _.sortBy(data, 'endTime').reverse().slice(0, 5);
-
                                 // loop and convert time to readable format
                                 data = _.map(data, function (item) {
                                     return {
@@ -275,14 +274,20 @@
                                 var today = toMidnight(new Date());
                                 var sevenDays = toMidnight(new Date());
                                 var fourteenDays = toMidnight(new Date());
+                                var getAllBuildsStatus = '';
+                                var twentyOneDays = toMidnight(new Date());
 
                                 sevenDays.setDate(sevenDays.getDate() - 7);
                                 fourteenDays.setDate(fourteenDays.getDate() - 14);
+                                twentyOneDays.setDate(twentyOneDays.getDate() - 21);
 
                                 cb({
                                     today: countToday(),
                                     sevenDays: countSevenDays(),
-                                    fourteenDays: countFourteenDays()
+                                    fourteenDays: countFourteenDays(),
+                                    getAllBuildsSuccessData: getBuildsSuccessData(),
+                                    getAllBuildsStatusDetails: getBuildStatusDetails(),
+                                    getAllBuildsDetails: getAllBuildsData()
                                 });
 
                                 function countToday() {
@@ -307,9 +312,129 @@
                                     date.setHours(0, 0, 0, 0);
                                     return date;
                                 }
+                                function getAllBuildsData(){
+                                    return _.filter(data, function (build) {
+                                        return build.endTime <= today.getTime();
+                                    })
+                                }
+                                function getBuildsSuccessData() {
+                                    return _.filter(data, function (build) {
+                                        return build.buildStatus !== "Failure";
+                                    });
+                                }
+                                function getBuildStatusDetails() {
+                                    var currentData = _.filter(data, function (build) {
+                                        build.timeDuration = 7;
+                                        return build.endTime >= sevenDays.getTime();
+                                    });
+                                    if (getStatusDetails(currentData) !== 2) {
+                                        currentData = _.filter(data, function (build) {
+                                            build.timeDuration = 14;
+                                            return build.endTime >= fourteenDays.getTime();
+                                        });
+                                        if (getStatusDetails(currentData) !== 2) {
+                                            currentData = _.filter(data, function (build) {
+                                                build.timeDuration = 21;
+                                                return build.endTime >= twentyOneDays.getTime();
+                                            });
+                                            if (getStatusDetails(currentData) !== 2) {
+                                                return {status:"Failed"};
+                                            } else {
+                                                return _.filter(currentData, function (build) {
+                                                    return build.buildStatus !== "Failure";
+                                                });
+                                            }
+                                        } else {
+                                            return _.filter(currentData, function (build) {
+                                                return build.buildStatus !== "Failure";
+                                            });
+                                        }
+                                    } else {
+                                        return _.filter(currentData, function (build) {
+                                            return build.buildStatus !== "Failure";
+                                        });
+                                    }
+                                }
+
+                                //Below changes for checking build status
+                                function getStatusDetails(obj) {
+                                    var status1 = 0;
+                                    var status2 = 0;
+                                    var statusTot = 0;
+                                    _(obj).forEach(function (buildItem, index) {
+                                        if (buildItem.buildStatus === 'Success') {
+                                            status1 = 1;
+                                        } else if (buildItem.buildStatus === 'Failure') {
+                                            status2 = 1;
+                                        }
+                                    });
+                                    statusTot = status1 + status2;
+                                    return statusTot;
+                                }
                             }
                             //endregion
-
+                            //For calculating Date difference
+                            function calculateDays(startDate, endDate) {
+                                var start_date = moment(startDate, 'YYYY-MM-DD HH:mm:ss');
+                                var end_date = moment(endDate, 'YYYY-MM-DD HH:mm:ss');
+                                var duration = moment.duration(end_date.diff(start_date));
+                                var startArr = startDate.split("/");
+                                // var endArr = endDate.split("/");
+                                // var a = moment([startArr[2], startArr[0], startArr[1]]);
+                                // var b = moment([endArr[2], endArr[0], endArr[1]]);
+                                // var dur = a.diff(b, 'days'); 
+                                var days = duration.asDays();
+                                return days;
+                            }
+                            //For Reformating data from json data for displaying text in Tabular content
+                            function reformattingObject(obj) {
+                                var updatedObject = [];
+                                _(obj).forEach(function (build) {
+                                    updatedObject.push({
+                                        recentBuild: "Build " + build.number + " " + build.status + " " + moment(build.endTime).minutes() + " Mins"
+                                    });
+                                });
+                                return updatedObject;
+                            }
+                            //Get Mean Time To Resolved Details 
+                            function getMeanTimeResolvedData(successObject,BuildsData) {
+                                var meanTimeTotal = 0;
+                                var timeDuration = 0;
+                                var count = 0;
+                                if(successObject!==0 && successObject.status === undefined){
+                                    for (var i = 0; i <= successObject.length - 1; i++) {
+                                        timeDuration = successObject[i].timeDuration;
+                                        var endTime1 = successObject[i].endTime;
+                                        if (successObject[i + 1] != undefined) {
+                                            var endTime2 = (successObject[i + 1] === undefined) ? successObject[i].endTime : successObject[i + 1].endTime;
+                                            if (endTime1 !== undefined && endTime2 !== undefined) {
+                                                count += 1;
+                                                meanTimeTotal += calculateDays(moment(endTime1).format('L'), moment(endTime2).format('L'));
+                                            } else {
+                                                meanTimeTotal += 0;
+                                            }
+    
+                                        }
+                                    }
+                                }else{
+                                    meanTimeTotal = 0;
+                                }
+                                if(meanTimeTotal !== 0 && count !==0){
+                                    return Math.ceil(meanTimeTotal/count);
+                                }else{
+                                    return 0;
+                                }
+                                
+                            }
+                            //Get latest build status
+                            function getLastBuildStatus (obj){
+                                if(obj[obj.length-1].buildStatus === "Success"){
+                                    return "Success";
+                                }
+                                if(obj[obj.length-1].buildStatus === "Failure"){
+                                    return "Failure";
+                                }
+                            }
                             //region web worker calls
                             // call to webworker methods nad set the controller variables with the processed values
                             worker.buildsPerDay(data, function (data) {
@@ -336,7 +461,6 @@
                             worker.latestBuilds(data, function (buildsToDisplay) {
                                 //$scope.$apply(function () {
                                 ctrl.DashrecentBuilds = buildsToDisplay;
-                                
                                 //});
                             });
 
@@ -364,6 +488,18 @@
                                 ctrl.DashtotalBuildsLastWeek = data.sevenDays;
                                 AllDashBuildsData.DashtotalBuildsLastWeek = data.sevenDays;
                                 ctrl.DashtotalBuildsLastMonth = data.fourteenDays;
+                                AllDashBuildsData.AllSuccessBuilds = data.getAllBuildsSuccessData;
+                                AllDashBuildsData.AllSuccessBuilds = AllDashBuildsData.AllSuccessBuilds.slice((AllDashBuildsData.AllSuccessBuilds.length - 2), AllDashBuildsData.AllSuccessBuilds.length);
+                                AllDashBuildsData.latestBuildsData = reformattingObject(ctrl.DashrecentBuilds);
+                                AllDashBuildsData.last2SuccessBuilds = {
+                                    recentBuild: '',
+                                    recentBuildNext: ''
+                                };
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild = "Build " + AllDashBuildsData.AllSuccessBuilds[1].number + " Success " + moment.duration(AllDashBuildsData.AllSuccessBuilds[1].duration).minutes() + " Mins";
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext = "Build " + AllDashBuildsData.AllSuccessBuilds[0].number + " Success " + moment.duration(AllDashBuildsData.AllSuccessBuilds[0].duration).minutes() + " Mins";
+                                //For Getting time difference from last successful commits
+                                AllDashBuildsData.meanTime2Resolved =  getMeanTimeResolvedData(data.getAllBuildsStatusDetails,data.getAllBuildsDetails)+" Days";
+                                AllDashBuildsData.lastBuildStatus = getLastBuildStatus(data.getAllBuildsDetails);
                                 //});
                             });
                             //endregion
@@ -383,7 +519,7 @@
                                 .groupBy(function (item) {
                                     return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
                                 }).value();
-                
+
                             for (var x = -1 * numberOfDays + 1; x <= 0; x++) {
                                 if (groups[x]) {
                                     commits.push(groups[x].length);
@@ -399,8 +535,7 @@
                                 labels.push('');
                             });
                             //update charts
-                            if (commits.length)
-                            {
+                            if (commits.length) {
                                 // ctrl.commitChartData = {
                                 //     series: [commits],
                                 //     labels: labels
@@ -419,7 +554,7 @@
                             //         data: issues
                             //     }]
                             // };
-                
+
                             // group get total counts and contributors
                             var today = toMidnight(new Date());
                             var sevenDays = toMidnight(new Date());
@@ -428,15 +563,15 @@
                             var fiveDays = today;
                             sevenDays.setDate(sevenDays.getDate() - 7);
                             fourteenDays.setDate(fourteenDays.getDate() - 14);
-                            thirtyDays.setDate(thirtyDays.getDate()-30);
-                            fiveDays.setDate(fiveDays.getDate()-5);
-                
+                            thirtyDays.setDate(thirtyDays.getDate() - 30);
+                            fiveDays.setDate(fiveDays.getDate() - 5);
+
                             var lastDayCommitCount = 0;
                             var lastDayCommitContributors = [];
-                
+
                             var lastSevenDayCommitCount = 0;
                             var lastSevenDaysCommitContributors = [];
-                
+
                             var lastFourteenDayCommitCount = 0;
                             var lastFourteenDaysCommitContributors = [];
 
@@ -444,60 +579,58 @@
                             var lastThirtyDaysCommitDetails = [];
                             var newCommitDate = [];
                             var lastFiveDaysCommitDetails = [];
-                
+
                             // loop through and add to counts
                             _(data).forEach(function (commit) {
-                                if(commit.scmCommitTimestamp >= today.getTime()) {
+                                if (commit.scmCommitTimestamp >= today.getTime()) {
                                     lastDayCommitCount++;
-                
-                                    if(lastDayCommitContributors.indexOf(commit.scmAuthor) == -1) {
+
+                                    if (lastDayCommitContributors.indexOf(commit.scmAuthor) == -1) {
                                         lastDayCommitContributors.push(commit.scmAuthor);
                                     }
                                 }
-                                if(commit.scmCommitTimestamp >= thirtyDays.getTime()){
+                                if (commit.scmCommitTimestamp >= thirtyDays.getTime()) {
                                     lastThirtyDaysCommitCount++;
-                                    if(newCommitDate.indexOf(moment(commit.scmCommitTimestamp).format('ll'))>-1){
+                                    if (newCommitDate.indexOf(moment(commit.scmCommitTimestamp).format('ll')) > -1) {
                                         lastThirtyDaysCommitCount++;
-                                        _(lastThirtyDaysCommitDetails).forEach(function(value){ 
-                                            if(value.CommitDate === moment(commit.scmCommitTimestamp).format('ll')){                                              
-                                            value.CommitsCount = lastThirtyDaysCommitCount
+                                        _(lastThirtyDaysCommitDetails).forEach(function (value) {
+                                            if (value.CommitDate === moment(commit.scmCommitTimestamp).format('ll')) {
+                                                value.CommitsCount = lastThirtyDaysCommitCount
                                             }
                                         });
-                                    }else {                                          
+                                    } else {
                                         lastThirtyDaysCommitCount = 0;
                                         lastThirtyDaysCommitCount++;
-                                    newCommitDate.push(moment(commit.scmCommitTimestamp).format('ll'));                                      
-                                    lastThirtyDaysCommitDetails.push({
-                                        "CommitDate":moment(commit.scmCommitTimestamp).format('ll'),
-                                        "CommitsCount": lastThirtyDaysCommitCount
-                                    });
+                                        newCommitDate.push(moment(commit.scmCommitTimestamp).format('ll'));
+                                        lastThirtyDaysCommitDetails.push({
+                                            "CommitDate": moment(commit.scmCommitTimestamp).format('ll'),
+                                            "CommitsCount": lastThirtyDaysCommitCount
+                                        });
                                     }
-                                   
+
                                 }
                                 lastFiveDaysCommitDetails = lastThirtyDaysCommitDetails;
                                 lastFiveDaysCommitDetails = lastFiveDaysCommitDetails.slice((lastFiveDaysCommitDetails.length - 5), lastFiveDaysCommitDetails.length);
-                                if(commit.scmCommitTimestamp >= sevenDays.getTime()) {
+                                if (commit.scmCommitTimestamp >= sevenDays.getTime()) {
                                     lastSevenDayCommitCount++;
-                
-                                    if(lastSevenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
+
+                                    if (lastSevenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
                                         lastSevenDaysCommitContributors.push(commit.scmAuthor);
                                     }
                                 }
-                
-                                if(commit.scmCommitTimestamp >= fourteenDays.getTime()) {
+
+                                if (commit.scmCommitTimestamp >= fourteenDays.getTime()) {
                                     lastFourteenDayCommitCount++;
                                     ctrl.commits.push(commit);
-                                    if(lastFourteenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
+                                    if (lastFourteenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
                                         lastFourteenDaysCommitContributors.push(commit.scmAuthor);
                                     }
                                 }
                             });
-                
+
                             ctrl.lastDayCommitCount = lastDayCommitCount;
                             ctrl.lastDayCommitContributorCount = lastDayCommitContributors.length;
                             ctrl.lastSevenDaysCommitCount = lastSevenDayCommitCount;
-                            //console.log("ctrl.lastSevenDaysCommitCount is : ",ctrl.lastSevenDaysCommitCount);
-                            //console.log("Avg Dailey Change is : ",Math.ceil(7/ctrl.lastSevenDaysCommitCount));
                             ctrl.lastSevenDaysCommitContributorCount = lastSevenDaysCommitContributors.length;
                             ctrl.lastFourteenDaysCommitCount = lastFourteenDayCommitCount;
                             ctrl.lastFourteenDaysCommitContributorCount = lastFourteenDaysCommitContributors.length;
@@ -505,16 +638,16 @@
                             AllDashCommitsData.lastDayCommitCount = lastDayCommitCount;
                             AllDashCommitsData.lastFiveDaysCommitDetails = lastFiveDaysCommitDetails;
                             AllDashCommitsData.avgDailyChange = (ctrl.lastSevenDaysCommitCount !== '' && ctrl.lastSevenDaysCommitCount !== null && ctrl.lastSevenDaysCommitCount !== undefined && ctrl.lastSevenDaysCommitCount !== 0)
-                                                                ?((Math.ceil(7/ctrl.lastSevenDaysCommitCount)>1)?(Math.ceil(7/ctrl.lastSevenDaysCommitCount)+" Days"):(Math.ceil(7/ctrl.lastSevenDaysCommitCount)+" Day"))
-                                                                :0+" Days";
+                                ? ((Math.ceil(7 / ctrl.lastSevenDaysCommitCount) > 1) ? (Math.ceil(7 / ctrl.lastSevenDaysCommitCount) + " Days") : (Math.ceil(7 / ctrl.lastSevenDaysCommitCount) + " Day"))
+                                : 0 + " Days";
 
-                
+
                             function toMidnight(date) {
                                 date.setHours(0, 0, 0, 0);
                                 return date;
                             }
                         }
-                
+
                         //Getting Repo Details End
                         switch (widgetName) {
                             case 'build':
@@ -534,7 +667,7 @@
                                     componentId: widgetCompId,
                                     numberOfDays: 14
                                 };
-                    
+
                                 codeRepoData.details(params).then(function (data) {
                                     processCommitResponse(data.result, params.numberOfDays);
                                     ctrl.lastUpdated = data.lastUpdated;
@@ -550,7 +683,7 @@
                     }
                     for (var z = 0; z < myres.activeWidgets.length; z++) {
                         updateDashboardDetailsForActiveWidgets(myres.activeWidgets[z], myres.application.components[0].id);
-                        if(z===myres.activeWidgets.length-1){
+                        if (z === myres.activeWidgets.length - 1) {
                             var board = {
                                 id: obj.id,
                                 name: dashboardService.getDashboardTitle(obj),
@@ -562,10 +695,10 @@
                                 isProduct: obj.type && obj.type.toLowerCase() === DashboardType.PRODUCT.toLowerCase(),
                                 scoreEnabled: obj.scoreEnabled,
                                 scoreDisplay: obj.scoreDisplay,
-                                totalBuildsLastWeek: (AllDashBuildsData !== undefined && AllDashBuildsData !== null && AllDashBuildsData !=='')?AllDashBuildsData:0,
+                                totalBuildsLastWeek: (AllDashBuildsData !== undefined && AllDashBuildsData !== null && AllDashBuildsData !== '') ? AllDashBuildsData : 0,
                                 totalCommitsLastWeek: AllDashCommitsData
                             };
-        
+
                             if (board.isProduct) {
                                 //console.log(board);
                             }
@@ -573,7 +706,7 @@
                         }
                     }
 
-                   
+
 
                 });
             }

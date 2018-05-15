@@ -123,6 +123,7 @@
                         ctrl.allWidgetDetails.Builds.widgetName = widgetName;
                         ctrl.allWidgetDetails.Builds.serviceName = serviceName;
                         ctrl.allWidgetDetails.Builds.widgetModalTitle = widgetName+' '+serviceName;
+                        ctrl.allWidgetDetails.Builds.totalBuildsLastWeek = currentItem.totalBuildsLastWeek;
                         //$rootScope.allWidgetDetailsDash = ctrl.allWidgetDetails;
                         //open modal for getting widget details
                         $uibModal.open({

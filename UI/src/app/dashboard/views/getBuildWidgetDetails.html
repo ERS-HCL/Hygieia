@@ -13,17 +13,13 @@
             </thead>
             <tbody>
             <tr>
-                <td>Build 123
-                    Success 10 Mins
+                <td>{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild}}
                 </td>
-                <td>Build 120 
-                    Success 12 Mins
+                <td>{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuildNext}}
                 </td>
-                <td>Build 122 Failed 10 Mins
-                    Build 121 Failed 10 Mins
-                    Build 120 Success 12 Mins
+                <td><p ng-repeat="latestItem in ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.latestBuildsData">{{latestItem.recentBuild}}</p>
                 </td>
-                <td>1 Hour</td>
+                <td>{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.meanTime2Resolved}}</td>
             </tr>
             </tbody>
         </table>
