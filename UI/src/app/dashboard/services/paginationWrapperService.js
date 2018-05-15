@@ -496,12 +496,17 @@
                             ctrl.lastDayCommitCount = lastDayCommitCount;
                             ctrl.lastDayCommitContributorCount = lastDayCommitContributors.length;
                             ctrl.lastSevenDaysCommitCount = lastSevenDayCommitCount;
+                            //console.log("ctrl.lastSevenDaysCommitCount is : ",ctrl.lastSevenDaysCommitCount);
+                            //console.log("Avg Dailey Change is : ",Math.ceil(7/ctrl.lastSevenDaysCommitCount));
                             ctrl.lastSevenDaysCommitContributorCount = lastSevenDaysCommitContributors.length;
                             ctrl.lastFourteenDaysCommitCount = lastFourteenDayCommitCount;
                             ctrl.lastFourteenDaysCommitContributorCount = lastFourteenDaysCommitContributors.length;
                             AllDashCommitsData.lastSevenDaysCommitCount = lastSevenDayCommitCount;
                             AllDashCommitsData.lastDayCommitCount = lastDayCommitCount;
                             AllDashCommitsData.lastFiveDaysCommitDetails = lastFiveDaysCommitDetails;
+                            AllDashCommitsData.avgDailyChange = (ctrl.lastSevenDaysCommitCount !== '' && ctrl.lastSevenDaysCommitCount !== null && ctrl.lastSevenDaysCommitCount !== undefined && ctrl.lastSevenDaysCommitCount !== 0)
+                                                                ?((Math.ceil(7/ctrl.lastSevenDaysCommitCount)>1)?(Math.ceil(7/ctrl.lastSevenDaysCommitCount)+" Days"):(Math.ceil(7/ctrl.lastSevenDaysCommitCount)+" Day"))
+                                                                :0+" Days";
 
                 
                             function toMidnight(date) {
