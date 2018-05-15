@@ -150,7 +150,7 @@
                                 current-page="currentPage"
                                 total-items= ctrl.getTotalItems()
                                 >
-                                <td title="{{item.name}}"class=" clickable" ng-style="{'background-color': (item.totalCommitsLastWeek.lastBuildStatus !== '' && item.totalCommitsLastWeek.lastBuildStatus === 'Success') ? ' rgb(251, 240, 215)' : ' rgb(205, 241, 205)'}" ng-click="ctrl.open(item.id)">
+                                <td title="{{item.name}}"class=" clickable" ng-style="{'background-color': (item.totalBuildsLastWeek.lastBuildStatus === 'Failure') ? 'rgb(234, 170, 170)' : 'rgb(205, 241, 205)'}" ng-click="ctrl.open(item.id)">
                               {{item.name}}</td>
                               <td class="clickable" ng-click="ctrl.getCurrentWidgetDetails(item.name,'Build',item.totalBuildsLastWeek.DashtotalBuildsLastWeek,item.id,item)">{{item.totalBuildsLastWeek.DashtotalBuildsLastWeek}}<b>...</b></td>
                               <td>{{item.totalBuildsLastWeek.meanTime2Resolved}}<b>...</b></td>
