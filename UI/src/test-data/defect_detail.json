@@ -1,0 +1,298 @@
+{
+    "result": [
+      {
+        "id": "5afbff0c3e17c330ccedf6d4",
+        "collectorItemId": "5afbfd3c3e17c34404d75494",
+        "timestamp": 0,
+        "queryName": "Latest_1711_SMB_Modify_Checkout",
+        "queryURL": "https://sdp.web.att.com/ccm/web/projects/Defect%20Management#action=com.ibm.team.workitem.runSavedQuery&id=_y-VTUHtVEeePx-kXD1X_zQ&index=51&orderBy=id&direction=descending&preserveFilter=true",
+        "username": "bs291h",
+        "defectAnalysis": {
+          "detail": [
+            {
+              "age": 2,
+              "Type": "Defect",
+              "Id": "502939",
+              "Summary": "IDSE_PI2_302049z_Security_MPEN_Checkout_Terms & Condition_Cross Site Scripting",
+              "Owned By": "MISTRY, NIRAJ",
+              "Status": "Retest",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "May 14, 2018 05:13 PM",
+              "EST Fixed Date": "May 15, 2018 02:00 PM",
+              "Created By": "MISTRY, NIRAJ",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 4,
+              "Type": "Defect",
+              "Id": "501607",
+              "Summary": "IDSE_PI2_302049z_Security_MPEN_Checkout_Cross Site Scripting",
+              "Owned By": "MISTRY, NIRAJ",
+              "Status": "Retest",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "May 12, 2018 01:22 PM",
+              "EST Fixed Date": "May 15, 2018 02:00 PM",
+              "Created By": "MISTRY, NIRAJ",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 5,
+              "Type": "Defect",
+              "Id": "500976",
+              "Summary": "IDSE_PI2_302049z_Web:Getting Blank page while removing cart from checkout page\n ",
+              "Owned By": "KALITA, RAM",
+              "Status": "Retest Complete",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "May 11, 2018 11:38 AM",
+              "Created By": "KALITA, RAM",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 6,
+              "Type": "Defect",
+              "Id": "500240",
+              "Summary": "IDSE_PI2_302049z_Cart page_Auth Flow_Web: BE error message is getting displayed in UI under checkout page.\n ",
+              "Owned By": "KANNAN, VISHNU",
+              "Status": "Retest Complete",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "May 10, 2018 05:40 PM",
+              "EST Fixed Date": "May 11, 2018 02:00 PM",
+              "Created By": "KANNAN, VISHNU",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 7,
+              "Type": "Defect",
+              "Id": "498710",
+              "Summary": "IDSE_PI2_302049z_Cart page_Auth_Web: Shipping info section is missing on the cart page when hardware device is selected for authenticated flow.\n ",
+              "Owned By": "DALAL, PAYAL",
+              "Status": "Retest Complete",
+              "Priority": "High",
+              "Severity": "Severity 1",
+              "Creation Date": "May 09, 2018 03:52 PM",
+              "Created By": "DALAL, PAYAL",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 7,
+              "Type": "Defect",
+              "Id": "498165",
+              "Summary": "IDSE_PI2_302049z_T&C section coming as blank in QA env\n ",
+              "Owned By": "TRAKROO, SHALISH",
+              "Status": "Retest Complete",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "May 09, 2018 10:41 AM",
+              "EST Fixed Date": "May 09, 2018 02:00 PM",
+              "Created By": "TRAKROO, SHALISH",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 16,
+              "Type": "Defect",
+              "Id": "489448",
+              "Summary": "IDSE_PI2_302049z_CET_Enhancement Request_my cart shows confusing premium info twice when streaming device is selected for prepay",
+              "Owned By": "STEPHEN, MANUEL",
+              "Status": "New",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "Apr 30, 2018 05:10 PM",
+              "Created By": "BAUCOM, ANDREW T",
+              "Application Fixed In SubTeam (Waterfall)": "Requirements"
+            },
+            {
+              "age": 16,
+              "Type": "Defect",
+              "Id": "489295",
+              "Summary": "IDSE_PI2_302049z_Web: Able to submit the order when terms and conditions is not selected.",
+              "Owned By": "KANNAN, VISHNU",
+              "Status": "Retest Complete",
+              "Priority": "High",
+              "Severity": "Severity 1",
+              "Creation Date": "Apr 30, 2018 03:10 PM",
+              "EST Fixed Date": "Apr 30, 2018 09:00 PM",
+              "Created By": "KANNAN, VISHNU",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 16,
+              "Type": "Defect",
+              "Id": "488977",
+              "Summary": "IDSE_PI2_302049z_ Credit Card Security Code entry field does not default to Numerical keypad upon selection for iPhone / iPad",
+              "Owned By": "KANAGASABAI, BALABASKARAN",
+              "Status": "Retest Blocked",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "Apr 30, 2018 11:42 AM",
+              "EST Fixed Date": "May 08, 2018 02:00 PM",
+              "Created By": "ALLEN, SEAN C",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 16,
+              "Type": "Defect",
+              "Id": "488942",
+              "Summary": "IDSE_PI2_302049z_Terms and Conditions modal_CATO_Voiceover: Voice Over issue on for the two-finger swipe upward it is reading the content from background page",
+              "Owned By": "DALAL, PAYAL",
+              "Status": "Retest Complete",
+              "Priority": "High",
+              "Severity": "Severity 1",
+              "Creation Date": "Apr 30, 2018 11:16 AM",
+              "EST Fixed Date": "May 02, 2018 04:00 PM",
+              "Created By": "DALAL, PAYAL",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 21,
+              "Type": "Defect",
+              "Id": "486003",
+              "Summary": "IDSE_PI2_302049z_Web: Cart section is getting displayed in center of screen when page size is reduced in IE browser.",
+              "Owned By": "KANNAN, VISHNU",
+              "Status": "Retest Complete",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "Apr 25, 2018 03:52 PM",
+              "EST Fixed Date": "May 08, 2018 02:00 PM",
+              "Created By": "KANNAN, VISHNU",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 21,
+              "Type": "Defect",
+              "Id": "485448",
+              "Summary": "IDSE_PI2_302049z_Reporting_Cart & Checkout Page_Web: Marketing tags to be available on cart & checkout panels\n ",
+              "Owned By": "COHEN, ROIE",
+              "Status": "Retest Blocked",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "Apr 25, 2018 09:47 AM",
+              "EST Fixed Date": "Apr 30, 2018 08:00 PM",
+              "Created By": "KALITA, RAM",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 27,
+              "Type": "Defect",
+              "Id": "481177",
+              "Summary": "IDSE_PI2_302049z_Web: Contact info is not getting pre-populated for authenticated eligible wireless customer on the checkout page.",
+              "Owned By": "STEPHEN, MANUEL",
+              "Status": "Open / In Analysis",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "Apr 19, 2018 05:18 PM",
+              "EST Fixed Date": "Apr 27, 2018 02:00 PM",
+              "Created By": "DALAL, PAYAL",
+              "Application Fixed In SubTeam (Waterfall)": "Requirements"
+            },
+            {
+              "age": 27,
+              "Type": "Defect",
+              "Id": "480218",
+              "Summary": "IDSE_PI2_302049z_Checkout page_CATO: Terms and Conditions modal links are not listed by NVDA screen reader Console.",
+              "Owned By": "DALAL, PAYAL",
+              "Status": "Retest",
+              "Priority": "High",
+              "Severity": "Severity 1",
+              "Creation Date": "Apr 18, 2018 10:37 PM",
+              "EST Fixed Date": "May 08, 2018 02:00 PM",
+              "Created By": "DALAL, PAYAL",
+              "Application Fixed In SubTeam (Waterfall)": "Cart & Checkout"
+            },
+            {
+              "age": 29,
+              "Type": "Defect",
+              "Id": "478797",
+              "Summary": "IDSE_PI2_302049z_Web: Removed values are getting updated under different sections in cart and checkout page.",
+              "Owned By": "KALBURGIE, SANDEEP M",
+              "Status": "Scheduled / Delivered",
+              "Priority": "Medium",
+              "Severity": "Severity 2",
+              "Creation Date": "Apr 17, 2018 02:48 PM",
+              "EST Fixed Date": "Apr 30, 2018 02:00 PM",
+              "Created By": "KANNAN, VISHNU",
+              "Application Fixed In SubTeam (Waterfall)": "Requirements"
+            }
+          ],
+          "categories": {
+            "detail": {},
+            "info": {
+              "New": "1",
+              "Open / In Analysis": "1",
+              "Retest": "3",
+              "Scheduled / Delivered": "1",
+              "Retest Complete": "7",
+              "Retest Blocked": "2"
+            }
+          },
+          "severities": {
+            "detail": {
+              "Severity 1": {
+                "Retest": [
+                  "480218"
+                ]
+              },
+              "Severity 2": {
+                "New": [
+                  "489448"
+                ],
+                "Open / In Analysis": [
+                  "481177"
+                ],
+                "Retest": [
+                  "502939",
+                  "501607"
+                ],
+                "Scheduled / Delivered": [
+                  "478797"
+                ],
+                "Retest Blocked": [
+                  "488977",
+                  "485448"
+                ]
+              }
+            },
+            "info": {
+              "Severity 1": "1",
+              "Severity 2": "7"
+            }
+          },
+          "priorities": {
+            "detail": {},
+            "info": {
+              "High": "1",
+              "Medium": "7"
+            }
+          },
+          "last2Days": [
+            "502939"
+          ],
+          "last5Days": [
+            "501607",
+            "500976",
+            "500240",
+            "498710",
+            "498165"
+          ],
+          "last10Days": [
+            "489448",
+            "489295",
+            "488977",
+            "488942"
+          ],
+          "last20Days": [
+            "486003",
+            "485448",
+            "481177",
+            "480218",
+            "478797"
+          ]
+        }
+      }
+    ],
+    "lastUpdated": 1526469727279,
+    "reportUrl": "https://sdp.web.att.com/ccm/web/projects/Defect%20Management#action=com.ibm.team.workitem.runSavedQuery&id=_LSU64EQFEeiqw8fChPibdA&orderBy=internalSeverity&direction=descending"
+  }
