@@ -33,7 +33,7 @@ import com.google.common.collect.Iterables;
 @Component
 public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefectCollectorTask.class);
-	
+
 	private final DefectCollectorRepository defectCollectorRepository;
 	private final DefectRepoRepository defectRepoRepository;
 	private final DefectClient defectClient;
@@ -41,15 +41,15 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 	private final BinaryDefectRepository binaryDefectRepository;
 	private final ComponentRepository dbComponentRepository;
 	private WebDriver driver;
-	
+
 	@Autowired
 	public DefectCollectorTask(TaskScheduler taskScheduler,
-									DefectCollectorRepository defectCollectorRepository,
-									BinaryDefectRepository binaryDefectRepository,
-							        DefectRepoRepository defectRepoRepository,
-									DefectClient defectClient,
-							        ComponentRepository dbComponentRepository,
-									DefectSettings defectSettings) {
+							   DefectCollectorRepository defectCollectorRepository,
+							   BinaryDefectRepository binaryDefectRepository,
+							   DefectRepoRepository defectRepoRepository,
+							   DefectClient defectClient,
+							   ComponentRepository dbComponentRepository,
+							   DefectSettings defectSettings) {
 		super(taskScheduler, "Defect");
 		this.defectCollectorRepository = defectCollectorRepository;
 		this.binaryDefectRepository = binaryDefectRepository;
@@ -57,27 +57,28 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 		this.defectSettings = defectSettings;
 		this.defectRepoRepository = defectRepoRepository;
 		this.dbComponentRepository = dbComponentRepository;
+		driver = getChromeDriver();
 	}
-	
-    @Override
-    public DefectCollector getCollector() {
-        return DefectCollector.prototype(defectSettings.getServers());
-    }
-    
-    @Override
-    public BaseCollectorRepository<DefectCollector> getCollectorRepository() {
-        return defectCollectorRepository;
-    }
 
-    @Override
-    public String getCron() {
-        return defectSettings.getCron();
-    }
-    
-    @Override
-    public void collect(DefectCollector collector) {
-    	Set<ObjectId> udId = new HashSet<>();
-        udId.add(collector.getId());
+	@Override
+	public DefectCollector getCollector() {
+		return DefectCollector.prototype(defectSettings.getServers());
+	}
+
+	@Override
+	public BaseCollectorRepository<DefectCollector> getCollectorRepository() {
+		return defectCollectorRepository;
+	}
+
+	@Override
+	public String getCron() {
+		return defectSettings.getCron();
+	}
+
+	@Override
+	public void collect(DefectCollector collector) {
+		Set<ObjectId> udId = new HashSet<>();
+		udId.add(collector.getId());
 		long start = System.currentTimeMillis();
 
 		List<DefectRepo> existingTDPs =  defectRepoRepository.findByCollectorIdIn(udId);
@@ -88,17 +89,17 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 		writeDefectsToDB(existingTDPs);
 
 
-			//	;
-		    //    addNewProjects(projects, existingProjects, collector);
-			//	refreshData(enabledProjects(collector, instanceUrl), sonarClient,metrics,instanceUrl);
+		//	;
+		//    addNewProjects(projects, existingProjects, collector);
+		//	refreshData(enabledProjects(collector, instanceUrl), sonarClient,metrics,instanceUrl);
 
 
 		log("Finished", start);
-		deleteUnwantedJobs(latestTDPs, existingTDPs, collector);
+		//	deleteUnwantedJobs(latestTDPs, existingTDPs, collector);
 
 
 
-    }
+	}
 
 
 
@@ -152,16 +153,16 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 			defectRepoRepository.save(stateChangeJobList);
 		}
 	}
-    
-    /**
-     * Add any new {@link BinaryDefect}s
-     * 
-     * @param instanceURL
+
+	/**
+	 * Add any new {@link BinaryDefect}s
+	 *
+	 * @param instanceURL
 	 * list of enabled {@link DefectRepo}s
-     */
-    private void addNewDefects(String instanceURL) {
+	 */
+	private void addNewDefects(String instanceURL) {
 		long start = System.currentTimeMillis();
-		
+
 		int count = 0;
 		/*
 		for (DefectRepo repo : enabledRepos) {
@@ -173,7 +174,7 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 				}
 			}
 		}
-		
+
 		// Iterate through list of repos and update the lastUpdated timestamp
     	for (DefectRepo repo : enabledRepos) {
     		repo.setLastUpdated(start);
@@ -181,15 +182,15 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 
 		log("New artifacts", start, count);
 	}
-    
-    private List<BinaryDefect> nullSafe(List<BinaryDefect> builds) {
-        return builds == null ? new ArrayList<BinaryDefect>() : builds;
-    }
-    
 
-    private boolean isNewDefect(BinaryDefect artifact) {
-        return false;
-    }
+	private List<BinaryDefect> nullSafe(List<BinaryDefect> builds) {
+		return builds == null ? new ArrayList<BinaryDefect>() : builds;
+	}
+
+
+	private boolean isNewDefect(BinaryDefect artifact) {
+		return false;
+	}
 
 
 
@@ -209,7 +210,7 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 
 	private void writeDefectsToDB(List<DefectRepo> defectRepoList){
 
-    	for(DefectRepo defectRepo : defectRepoList){
+		for(DefectRepo defectRepo : defectRepoList){
 			if( ( defectRepo.getQueryURL() == null || defectRepo.getQueryURL().isEmpty() )
 					|| ( defectRepo.getQueryName()== null || defectRepo.getQueryName().isEmpty() )
 					|| ( defectRepo.getUserName()== null || defectRepo.getUserName().isEmpty() )
@@ -218,11 +219,13 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 				continue;
 			}
 
-    		try{
+			try{
 
 				String fileName = defectRepo.getQueryName() + ".csv";
 				String csvFile = defectSettings.getDownloadpath() + "\\" + fileName;
+				LOGGER.info("csv File" + csvFile);
 				File  csvDiskFile = new File(csvFile);
+				LOGGER.info(" CSV File : {}", csvFile);
 				if(csvDiskFile.exists()) {
 					List<Defect> defects = readCSVFile(Defect.class, csvFile);
 					LOGGER.info(" Received set of Defects. Size : {}", defects.size());
@@ -235,7 +238,7 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 						analyseDefects(tdpApiResponse);
 						binaryDefect.setDefectAnalysis(tdpApiResponse);
 						binaryDefectRepository.save(binaryDefect);
-						LOGGER.info(" Data updated Successfully : {}",defectRepo.getQueryURL());
+						LOGGER.info(" Data inserted Successfully : Query :{} , Name : {}",defectRepo.getQueryURL(),defectRepo.getQueryName());
 					}
 					else{
 						BinaryDefect binaryDefect = new BinaryDefect();
@@ -249,15 +252,15 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 						binaryDefect.setQueryName(defectRepo.getQueryName());
 						//binaryDefect.setTimestamp();
 						binaryDefectRepository.save(binaryDefect);
-						LOGGER.info(" Data inserted Successfully : {}",defectRepo.getQueryURL());
+						LOGGER.info(" Data inserted Successfully : Query :{} , Name : {}",defectRepo.getQueryURL(),defectRepo.getQueryName());
 					}
 				}
 				else{
-					LOGGER.info(" Data File does not exist  : {}",defectRepo.getQueryURL());
+					LOGGER.info(" Data File does not exist  : {}, Filename : {} ",defectRepo.getQueryURL(),defectRepo.getQueryName());
 				}
 			}
 			catch (Exception ex){
-    			LOGGER.error( "issue occurred while reading Defect data for the Query {} , Exception = {}", defectRepo.getQueryURL(), ex);
+				LOGGER.error( "issue occurred while reading Defect data for the Query {} , Exception = {}", defectRepo.getQueryURL(), ex);
 
 			}
 
@@ -463,63 +466,72 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 	public void refreshData(List<DefectRepo>  existingTDPs, DefectClient defectClient){
 
 
-			for(DefectRepo defectRepo : existingTDPs) {
+		for(DefectRepo defectRepo : existingTDPs) {
 
-				LOGGER.info(" Collector Id :{}, queryURL : {} , queryName : {} ", defectRepo.getId().toString(), defectRepo.getQueryURL(), defectRepo.getQueryName());
+			LOGGER.info(" Collector Id :{}, queryURL : {} , queryName : {} ", defectRepo.getId().toString(), defectRepo.getQueryURL(), defectRepo.getQueryName());
 
-				if( ( defectRepo.getQueryURL() == null || defectRepo.getQueryURL().isEmpty() )
-						|| ( defectRepo.getQueryName()== null || defectRepo.getQueryName().isEmpty() )
-						|| ( defectRepo.getUserName()== null || defectRepo.getUserName().isEmpty() )
-				        || ( defectRepo.getPassword()== null || defectRepo.getPassword().isEmpty() )){
-					LOGGER.info(" Partial Configuration. Skipping this collection. Collector Id :{}, queryURL : {} , queryName : {} ", defectRepo.getId().toString(), defectRepo.getQueryURL(), defectRepo.getQueryName());
-					continue;
-				}
+			if( ( defectRepo.getQueryURL() == null || defectRepo.getQueryURL().isEmpty() )
+					|| ( defectRepo.getQueryName()== null || defectRepo.getQueryName().isEmpty() )
+					|| ( defectRepo.getUserName()== null || defectRepo.getUserName().isEmpty() )
+					|| ( defectRepo.getPassword()== null || defectRepo.getPassword().isEmpty() )){
+				LOGGER.info(" Partial Configuration. Skipping this collection. Collector Id :{}, queryURL : {} , queryName : {} ", defectRepo.getId().toString(), defectRepo.getQueryURL(), defectRepo.getQueryName());
+				continue;
+			}
 
-				try {
-					driver = getChromeDriver();
-					driver.get(defectRepo.getQueryURL());
-					String appTitle = driver.getTitle();
-					if (appTitle != null && appTitle.equalsIgnoreCase(DefectConstant.loginForm)) {
-						WebElement userId = driver.findElement(By.id(DefectConstant.userIdField));
-						if (userId != null) {
-							userId.sendKeys(defectRepo.getUserName());
-						}
-						WebElement passwordField = driver.findElement(By.id(DefectConstant.secretField));
-						if (passwordField != null) {
-							passwordField.sendKeys(defectRepo.getPassword());
-							passwordField.sendKeys(Keys.ENTER);
-						}
+			try {
 
-						String loggedInTitle = driver.getTitle();
-						System.out.println("Current page title is :: " + loggedInTitle);
-						if (loggedInTitle != null && loggedInTitle.contains("Change and Configuration Management")) {
-							WebElement downloadCSVContainer = driver.findElement(By.id(DefectConstant.downloadButton));
-							if (downloadCSVContainer != null && downloadCSVContainer.findElement(By.tagName("a")) != null) {
-								WebElement downloadCSVButton = downloadCSVContainer.findElement(By.tagName("a"));
-								downloadCSVButton.click();
-							}
-						}
+				driver.get(defectRepo.getQueryURL());
+				String appTitle = driver.getTitle();
+				if (appTitle != null && appTitle.equalsIgnoreCase(DefectConstant.loginForm)) {
+					WebElement userId = driver.findElement(By.id(DefectConstant.userIdField));
+					if (userId != null) {
+						userId.sendKeys(defectRepo.getUserName());
+					}
+					WebElement passwordField = driver.findElement(By.id(DefectConstant.secretField));
+					if (passwordField != null) {
+						passwordField.sendKeys(defectRepo.getPassword());
+						passwordField.sendKeys(Keys.ENTER);
+					}
 
-					} else {
+					String loggedInTitle = driver.getTitle();
+					System.out.println("Current page title is :: " + loggedInTitle);
+					String queryTemp = loggedInTitle;
 
-						String loggedInTitle = driver.getTitle();
-						System.out.println("Current page title is :: " + loggedInTitle);
-						if (loggedInTitle != null && loggedInTitle.contains("Change and Configuration Management")) {
-							WebElement downloadCSVContainer = driver.findElement(By.id(DefectConstant.downloadButton));
-							if (downloadCSVContainer != null && downloadCSVContainer.findElement(By.tagName("a")) != null) {
-								WebElement downloadCSVButton = downloadCSVContainer.findElement(By.tagName("a"));
-								downloadCSVButton.click();
-							}
+					if (loggedInTitle != null && loggedInTitle.contains("Change and Configuration Management")) {
+						WebElement downloadCSVContainer = driver.findElement(By.id(DefectConstant.downloadButton));
+						if (downloadCSVContainer != null && downloadCSVContainer.findElement(By.tagName("a")) != null) {
+							String queryTemp2 = queryTemp.replaceAll("Query: ","");
+							String queryTemp3 = queryTemp2.replaceAll(" - Change and Configuration Management","");
+							LOGGER.info(" current page title after modification :{}",queryTemp3);
+							defectRepo.setQueryName(queryTemp3);
+							WebElement downloadCSVButton = downloadCSVContainer.findElement(By.tagName("a"));
+							downloadCSVButton.click();
 						}
 					}
-					if (driver != null)
-						driver.close();
-				} catch (Exception e) {
-					LOGGER.info("  Issue exist while retrieve data from  CollectorId : {}, SDP URL : {} ,   defect details :  {}", defectRepo.getCollectorId(), defectRepo.getQueryURL(), e);
-					if (driver != null)
-						driver.close();
+
+				} else {
+
+					String loggedInTitle = driver.getTitle();
+					System.out.println("Current page title is :: " + loggedInTitle);
+					String queryTemp = loggedInTitle;
+					if (loggedInTitle != null && loggedInTitle.contains("Change and Configuration Management")) {
+						WebElement downloadCSVContainer = driver.findElement(By.id(DefectConstant.downloadButton));
+						if (downloadCSVContainer != null && downloadCSVContainer.findElement(By.tagName("a")) != null) {
+							String queryTemp2 = queryTemp.replaceAll("Query: ","");
+							String queryTemp3 = queryTemp2.replaceAll(" - Change and Configuration Management","");
+							LOGGER.info(" current page title after modification :{}",queryTemp3);
+							defectRepo.setQueryName(queryTemp3);
+							WebElement downloadCSVButton = downloadCSVContainer.findElement(By.tagName("a"));
+							downloadCSVButton.click();
+						}
+					}
 				}
+				Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+			} catch (Exception e) {
+				LOGGER.info("  Issue exist while retrieve data from  CollectorId : {}, SDP URL : {} ,   defect details :  {}", defectRepo.getCollectorId(), defectRepo.getQueryURL(), e);
+
 			}
+		}
 
 	}
 

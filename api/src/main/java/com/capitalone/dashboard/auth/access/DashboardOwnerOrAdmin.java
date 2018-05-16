@@ -16,6 +16,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @PreAuthorize(DashboardOwnerOrAdmin.IS_DASHBOARD_OWNER_OR_ADMIN)
 public @interface DashboardOwnerOrAdmin {
 
-	static final String IS_DASHBOARD_OWNER_OR_ADMIN = "@methodLevelSecurityHandler.isOwnerOfDashboard(#id) or hasRole('ROLE_ADMIN')";
+	static final String IS_DASHBOARD_OWNER_OR_ADMIN = "@methodLevelSecurityHandler.isOwnerOfDashboard(#id) or hasRole('ROLE_ADMIN') or  hasRole('ROLE_TEAM') ";
 	
 }
