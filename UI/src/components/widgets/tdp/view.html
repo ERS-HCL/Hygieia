@@ -1,0 +1,98 @@
+<div class="tdp-view">
+    <!-- Below Table for tdpDetails Tables -->
+  <div class="row">
+        <div class="col-lg-12">
+          <div class="widget">
+              <div class="widget-heading" style="font-size: 1.7rem !important;text-transform: none !important;font-weight: 100 !important;">
+                  TDP Analysis
+                </div>
+          </div>
+          <div class="widget average-build-duration">
+            <!--Ageing Details -->
+            <div class="widget-body">
+              <div class="widget ca-tests">
+                <div class="widget-heading">
+                  Defect Details
+                </div>
+                <div class="widget-heading" style="color:#fd9e32 !important;">
+                  <span>Status</span>
+                  <span style="float:right">Count</span>
+                </div>
+                <div class="widget-body">
+                  <table class="table" style="text-align-last: left !important;">
+                    <tr class="dash-row" ng-repeat="tdpCategoriesData in tdpView.tdpDetailsNew.categories" tabindex="0">
+                      <td class="ca-name">{{tdpCategoriesData.name}}</td>
+                      <td class="ca-value">{{tdpCategoriesData.value}}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!--Ageing Details -->
+            <!--Ageing Details -->
+            <div class="widget-body">
+              <div class="widget ca-tests">
+                <div class="widget-heading">
+                  Severities Details
+                </div>
+                <div class="widget-heading" style="color:#fd9e32 !important;">
+                  <span>Severity</span>
+                  <span style="float:right">Count</span>
+                </div>
+                <div class="widget-body">
+                  <table class="table" style="text-align-last: left !important;">
+                    <tr class="dash-row" ng-repeat="tdpSeveritiesData in tdpView.tdpDetailsNew.severities" tabindex="0">
+                      <td class="ca-name">{{tdpSeveritiesData.name}}</td>
+                      <td class="ca-value">{{tdpSeveritiesData.value}}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!--Ageing Details -->
+            <!--priorities Details -->
+            <div class="widget-body">
+              <div class="widget ca-tests">
+                <div class="widget-heading">
+                  Priorities Details
+                </div>
+                <div class="widget-heading" style="color:#fd9e32 !important;">
+                  <span>Priority</span>
+                  <span style="float:right">Count</span>
+                </div>
+                <div class="widget-body">
+                  <table class="table" style="text-align-last: left !important;">
+                    <tr class="dash-row" ng-repeat="tdpPrioritiesData in tdpView.tdpDetailsNew.priorities" tabindex="0">
+                      <td class="ca-name">{{tdpPrioritiesData.name}}</td>
+                      <td class="ca-value">{{tdpPrioritiesData.value}}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!--priorities Details -->
+            <!--Ageing Details -->
+            <div class="widget-body">
+              <div class="widget ca-tests">
+                <div class="widget-heading">
+                  Ageing Details
+                </div>
+                <div class="widget-heading" style="color:#fd9e32!important;">
+                  <span>Ageing</span>
+                  <span style="float:right">Count</span>
+                </div>
+                <div class="widget-body">
+                  <table class="table" style="text-align-last: left !important;">
+                    <tr class="dash-row" ng-repeat="tdpAgeingData in tdpView.tdpDetailsNew.ageing" tabindex="0">
+                      <td class="ca-name">{{tdpAgeingData.name}}</td>
+                      <td class="ca-value">{{tdpAgeingData.value}}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <!--Ageing Details -->
+          </div>
+        </div>
+      </div>
+</div>
