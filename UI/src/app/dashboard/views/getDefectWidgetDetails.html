@@ -1,10 +1,10 @@
-<widget-modal widget-modal-title="Getting Widget Details">
+<widget-modal widget-modal-title="{{ctrl.allWidgetDetails.Defects.widgetModalTitle}}">
     <form name="DefectwidgetDetails" class="form" novalidate>
         <table class="table">
-            <label class="modal-label">Defects</label>
+            <label class="modal-label">{{ctrl.allWidgetDetails.Defects.widgetName}}</label>
             <thead>
             <tr>
-                <th>No of Defectgs / Today</th>
+                <th>No of Defects / Today</th>
                 <th>Last 7 Days</th>
                 <th>Trend</th>
                 <th>Avg. Daily Change</th>
@@ -12,13 +12,11 @@
             </thead>
             <tbody>
             <tr>
-                <td>12</td>
-                <td>35</td>
-                <td>7th May 10 Defects
-                    8th May 12 Defects
-                    9th May 12 Defects
+                <td><a href="{{ctrl.allWidgetDetails.Defects.totalDefectsCount.defectTdpUrl}}">{{ctrl.allWidgetDetails.Defects.totalDefectsCount.defectsCount}}</a></td>
+                <td>{{ctrl.allWidgetDetails.Defects.totalDefectsCount.last7DaysDefectCount}}</td>
+                <td><p ng-repeat="trend in ctrl.allWidgetDetails.Defects.totalDefectsCount.trendingData.last7DaysDefects"><span>{{trend.defectID}}</span><span>{{trend.priority}}</span><span>{{trend.severity}}</span><span>{{trend.status}}</span></p>
                 </td>
-                <td>1 Hour</td>
+                <td>{{ctrl.allWidgetDetails.Defects.totalDefectsCount.avgDailyChange}}</td>
             </tr>
             </tbody>
         </table>

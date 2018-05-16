@@ -106,6 +106,9 @@
                     var AllDashCommitsData = {};
                     var AllDashDefectsData = {};                    
                     AllDashDefectsData.defectsCount = '';
+                    AllDashDefectsData.last7DaysDefectCount = '';
+                    AllDashDefectsData.todayDefectCount = '';
+                    AllDashDefectsData.trendingData = {};
                     //Updating Dashboard Data table details from widget
                     function updateDashboardDetailsForActiveWidgets(widgetName, widgetCompId) {
                         //Below Changes for getting Build Details
@@ -705,8 +708,20 @@
                             }
                         }
                         //Changes for TDP details
-                        function processDefectResponse(data){                            
+                        function processDefectResponse(data){   
+                            var avgDefectDetails = {
+                                avgDefectData :[]
+                            };
+                            
+                            var lastDefectAvailable = false;
+                            //Getting defects details based on days - start
+                            //Getting defects details based on days - end                         
                             AllDashDefectsData.defectsCount = 0;
+                            AllDashDefectsData.last7DaysDefectCount = 0;
+                            AllDashDefectsData.todayDefectCount = 0;
+                            AllDashDefectsData.trendingData.last7DaysDefects = [];
+                            AllDashDefectsData.avgDailyChange = 0;
+                            AllDashDefectsData.defectTdpUrl = "#";
                             console.log("Current data is from processDefectResponse function : ", data);
                             if(data.result !== undefined && data.result.length!==0 && data.result.length !== undefined){
                                 var count = 0;
@@ -714,6 +729,39 @@
                                     count += parseInt(val);
                                 });  
                                 AllDashDefectsData.defectsCount = count;
+                                AllDashDefectsData.last7DaysDefectCount =  _.filter(data.result[0].defectAnalysis.detail, function (defect) {
+                                    return defect.age <= 7;
+                                }).length;
+                                AllDashDefectsData.todayDefectCount =  _.filter(data.result[0].defectAnalysis.detail, function (defect) {
+                                    return defect.age == 1;
+                                }).length;
+                                // avgDefectDetails.avgDefectData = _.filter(data.result[0].defectAnalysis.detail, function (defect) {
+                                //     return defect.Status == "Retest Complete";
+                                // });
+                                // _(avgDefectDetails.avgDefectData).forEach(function (defect){
+                                //     if(defect.Id !== data.result[0].defectAnalysis.detail[0].Id){
+                                //         lastDefectAvailable = true;
+                                //     }
+                                // });
+                                // if(lastDefectAvailable){
+                                //     avgDefectDetails.avgDefectData.push(data.result[0].defectAnalysis.detail[0]);
+                                // }
+                                AllDashDefectsData.avgDailyChange = (AllDashDefectsData.last7DaysDefectCount !== '' && AllDashDefectsData.last7DaysDefectCount !== null && AllDashDefectsData.last7DaysDefectCount !== undefined && AllDashDefectsData.last7DaysDefectCount !== 0)
+                                ? ((Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) > 1) ? (Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) + " Days") : (Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) + " Day"))
+                                : 0 + " Days";
+                                AllDashDefectsData.defectTdpUrl = data.result[0].queryURL;
+                                console.log("AllDashDefectsData.defectTdpUrl is :",data.result[0]);
+                                //For getting first 7 element values
+                                for(var i=0;i<=7;i++){
+                                    var defectFormatting = {
+                                        defectID: data.result[0].defectAnalysis.detail[i].Id,
+                                        priority: data.result[0].defectAnalysis.detail[i].Priority,
+                                        severity: data.result[0].defectAnalysis.detail[i].Severity,
+                                        status: data.result[0].defectAnalysis.detail[i].Status
+                                    }
+                                    AllDashDefectsData.trendingData.last7DaysDefects.push(defectFormatting);
+                                    
+                                }
                                 console.log("current count is : ",AllDashDefectsData);
                             }else{
                                 console.log("Defect Response error");

@@ -142,6 +142,7 @@
                         ctrl.allWidgetDetails.Defects.widgetName = widgetName;
                         ctrl.allWidgetDetails.Defects.serviceNAme = serviceName;
                         ctrl.allWidgetDetails.Defects.widgetModalTitle = widgetName+' '+serviceName;
+                        ctrl.allWidgetDetails.Defects.totalDefectsCount = currentItem.totalDefectsCount;
                         //open modal for getting widget details
                         $uibModal.open({
                             templateUrl:'app/dashboard/views/getDefectWidgetDetails.html',
