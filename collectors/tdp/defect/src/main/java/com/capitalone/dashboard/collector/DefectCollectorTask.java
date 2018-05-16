@@ -278,17 +278,27 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 			CsvMapper mapper = new CsvMapper();
 			File file = new File(fileName);
 			MappingIterator<T> readValues = null;
-			if(file.canRead()) {
-				readValues = mapper.reader(type).with(bootstrapSchema).readValues(file);
-			}
-			if(file.canWrite()) {
-				//   file.delete();
-			}
+			if(file.exists()) {
+				if (file.canRead()) {
+					readValues = mapper.reader(type).with(bootstrapSchema).readValues(file);
+				}
 
-			if(readValues != null)
-				return readValues.readAll();
-			else
+
+				if (readValues != null) {
+					List<T>  arrlist = readValues.readAll();
+					if (file.canWrite()) {
+						 file.delete();
+					}
+
+					return arrlist;
+				}
+				else{
+					return Collections.emptyList();
+				}
+			}
+			else {
 				return Collections.emptyList();
+			}
 		} catch (Exception e) {
 			LOGGER.error( " Exception while reading Files : {}" , e);
 			return Collections.emptyList();

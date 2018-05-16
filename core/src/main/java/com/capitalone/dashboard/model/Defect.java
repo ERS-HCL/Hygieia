@@ -208,4 +208,92 @@ public class Defect implements Serializable{
     private String actions;
     @JsonProperty("Application Fixed In SubTeam (Waterfall)")
     private String subTeam;
+
+    public String getPhaseFoundInd() {
+        return phaseFoundInd;
+    }
+
+    public void setPhaseFoundInd(String phaseFoundInd) {
+        this.phaseFoundInd = phaseFoundInd;
+    }
+
+    public String getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
+
+    public String getUser3() {
+        return user3;
+    }
+
+    public void setUser3(String user3) {
+        this.user3 = user3;
+    }
+
+    public String getUser4() {
+        return user4;
+    }
+
+    public void setUser4(String user4) {
+        this.user4 = user4;
+    }
+
+    public String getUser5() {
+        return user5;
+    }
+
+    public void setUser5(String user5) {
+        this.user5 = user5;
+    }
+
+    public String getUser6() {
+        return user6;
+    }
+
+    public void setUser6(String user6) {
+        this.user6 = user6;
+    }
+
+    public String getUser7() {
+        return user7;
+    }
+
+    public void setUser7(String user7) {
+        this.user7 = user7;
+    }
+
+    public String getUser8() {
+        return user8;
+    }
+
+    public void setUser8(String user8) {
+        this.user8 = user8;
+    }
+
+    @JsonProperty("Phase Found In")
+    private String phaseFoundInd;
+    @JsonProperty("Environment")
+    private String environment;
+
+
+
+    @JsonProperty("User 3")
+    private String user3;
+
+    @JsonProperty("User 4")
+    private String user4;
+
+    @JsonProperty("User 5")
+    private String user5;
+    @JsonProperty("User 6")
+    private String user6;
+
+    @JsonProperty("User 7")
+    private String user7;
+
+    @JsonProperty("User 8")
+    private String user8;
 }
