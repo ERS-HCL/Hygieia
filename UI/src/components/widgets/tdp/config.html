@@ -1,0 +1,57 @@
+<widget-modal widget-modal-title="Configure Code Tdp Widget">
+    <form name="configForm"
+        ng-submit="tdpConfig.submit(configForm)"
+        novalidate="novalidate">    
+        <form-group input="tdpUrl"
+                    class="text-center"
+                    errors="{required:'Repository URL is required', url: 'Please enter a valid URL'}">
+    
+            <label class="modal-label">Tdp URL</label>
+            <input type="url"
+                   name="tdpUrl"
+                   class="form-control text-center"
+                   ng-model="tdpConfig.tdpUrl"
+                   placeholder="Enter URL"
+                   autocomplete="off"
+                   required />
+        </form-group>    
+        <form-group ng-if="tdpConfig.tdpOption.name != 'Gitlab'" input="tdpuser"
+                    errors="{}">
+    
+            <label class="modal-label">Credentials (Optional)</label>
+    
+            <input type="text"
+                   name="tdpuser"
+                   class="form-control text-center"
+                   ng-model="tdpConfig.tdpuser"
+                   maxlength="25"
+                   autocomplete="off"
+                   placeholder="Enter your tdp username"/>
+        </form-group>
+        <form-group ng-if="tdpConfig.tdpOption.name != 'Gitlab'" input="tdppass"
+                    errors="{errorEncryptingPassword: 'Error encrypting password.'}">
+            <input type="password"
+                   name="tdppass"
+                   class="form-control text-center"
+                   ng-model="tdpConfig.tdppass"
+                   maxlength="100"
+                     autocomplete="new-password"
+                   placeholder="Enter your tdp password" />
+        </form-group>
+        <form-group ng-if="tdpConfig.tdpOption.name != 'Gitlab'" input="tdpQueryName"
+                    errors="{}">
+    
+            <input type="text"
+                   name="tdpQueryName"
+                   class="form-control text-center"
+                   ng-model="tdpConfig.tdpQueryName"
+                   maxlength="25"
+                   autocomplete="off"
+                   placeholder="Enter the name of SDP Search"/>
+        </form-group>    
+        <div class="button-row row text-center">
+            <button type="submit" class="btn btn-primary btn-wide">Save</button>
+        </div>
+    </form>
+    </widget-modal>
+    
