@@ -4,9 +4,9 @@
     angular
         .module(HygieiaConfig.module)
         .service('paginationWrapperService', paginationWrapperService);
-    paginationWrapperService.$inject = ['$q', 'DashboardType', 'dashboardData', 'dashboardService', 'userService', '$http', 'buildData', '$rootScope', 'codeRepoData'];
+    paginationWrapperService.$inject = ['$q', 'DashboardType', 'dashboardData', 'dashboardService', 'userService', '$http', 'buildData', '$rootScope', 'codeRepoData', 'codeTdpData'];
 
-    function paginationWrapperService($q, DashboardType, dashboardData, dashboardService, userService, $http, buildData, $rootScope, codeRepoData) {
+    function paginationWrapperService($q, DashboardType, dashboardData, dashboardService, userService, $http, buildData, $rootScope, codeRepoData, codeTdpData) {
         var currentPage = 0;
         var pageSize = 10;
         var currentPageMyDash = 0;
@@ -104,6 +104,7 @@
                 dashboardData.getComponent(obj.id).then(function (myres) {
                     var AllDashBuildsData = {};
                     var AllDashCommitsData = {};
+                    var AllDashDefectsData = {};
                     //Updating Dashboard Data table details from widget
                     function updateDashboardDetailsForActiveWidgets(widgetName, widgetCompId) {
                         //Below Changes for getting Build Details
@@ -323,6 +324,7 @@
                                     });
                                 }
                                 function getBuildStatusDetails() {
+                                    var lastBuildAvailable = false;
                                     var currentData = _.filter(data, function (build) {
                                         build.timeDuration = 7;
                                         return build.endTime >= sevenDays.getTime();
@@ -340,19 +342,46 @@
                                             if (getStatusDetails(currentData) !== 2) {
                                                 return {status:"Failed"};
                                             } else {
-                                                return _.filter(currentData, function (build) {
+                                                var updatedData =  _.filter(currentData, function (build) {
                                                     return build.buildStatus !== "Failure";
                                                 });
+                                                _(updatedData).forEach(function (build){
+                                                    if(build.number !== data[data.length-1].number){
+                                                        lastBuildAvailable = true;
+                                                    }
+                                                });
+                                                if(lastBuildAvailable){
+                                                    updatedData.push(data[data.length-1]);
+                                                }
+                                                return updatedData;
                                             }
                                         } else {
-                                            return _.filter(currentData, function (build) {
+                                            var updatedData =  _.filter(currentData, function (build) {
                                                 return build.buildStatus !== "Failure";
                                             });
+                                            _(updatedData).forEach(function (build){
+                                                if(build.number !== data[data.length-1].number){
+                                                    lastBuildAvailable = true;
+                                                }
+                                            });
+                                            if(lastBuildAvailable){
+                                                updatedData.push(data[data.length-1]);
+                                            }
+                                            return updatedData;
                                         }
                                     } else {
-                                        return _.filter(currentData, function (build) {
+                                        var updatedData =  _.filter(currentData, function (build) {
                                             return build.buildStatus !== "Failure";
                                         });
+                                        _(updatedData).forEach(function (build){
+                                            if(build.number !== data[data.length-1].number){
+                                                lastBuildAvailable = true;
+                                            }
+                                        });
+                                        if(lastBuildAvailable){
+                                            updatedData.push(data[data.length-1]);
+                                        }
+                                        return updatedData;
                                     }
                                 }
 
@@ -403,6 +432,7 @@
                             }
                             //Get Mean Time To Resolved Details 
                             function getMeanTimeResolvedData(successObject,BuildsData) {
+                                console.log("successObject is : ",successObject);
                                 var meanTimeTotal = 0;
                                 var timeDuration = 0;
                                 var count = 0;
@@ -433,11 +463,16 @@
                             }
                             //Get latest build status
                             function getLastBuildStatus (obj){
-                                if(obj[obj.length-1].buildStatus === "Success"){
-                                    return "Success";
-                                }
-                                if(obj[obj.length-1].buildStatus === "Failure"){
-                                    return "Failure";
+                                console.log("obj is : ",obj);
+                                if(obj.length !== 0){
+                                    if(obj[obj.length-1].buildStatus === "Success"){
+                                        return "Success";
+                                    }
+                                    if(obj[obj.length-1].buildStatus === "Failure"){
+                                        return "Failure";
+                                    }
+                                }else{
+                                    return 0;
                                 }
                             }
                             //region web worker calls
@@ -510,14 +545,14 @@
                                         buildUrl:''
                                     }
                                 };
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = AllDashBuildsData.AllSuccessBuilds[1].number ;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0 && AllDashBuildsData.AllSuccessBuilds[1].number !== undefined && AllDashBuildsData.AllSuccessBuilds[1].number !== '')?AllDashBuildsData.AllSuccessBuilds[1].number:0;
                                 AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = "Success";
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = moment.duration(AllDashBuildsData.AllSuccessBuilds[1].duration).minutes() + " Mins";
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = AllDashBuildsData.AllSuccessBuilds[1].buildUrl;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = AllDashBuildsData.AllSuccessBuilds[0].number;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (AllDashBuildsData.AllSuccessBuilds.length !== 0)?moment.duration(AllDashBuildsData.AllSuccessBuilds[1].duration).minutes() + " Mins":0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0)?AllDashBuildsData.AllSuccessBuilds[1].buildUrl:0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0)?AllDashBuildsData.AllSuccessBuilds[0].number:0;
                                 AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = "Success";
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime =  moment.duration(AllDashBuildsData.AllSuccessBuilds[0].duration).minutes() + " Mins";
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = AllDashBuildsData.AllSuccessBuilds[1].buildUrl;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime =  (AllDashBuildsData.AllSuccessBuilds.length !== 0)?moment.duration(AllDashBuildsData.AllSuccessBuilds[0].duration).minutes() + " Mins":0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0)?AllDashBuildsData.AllSuccessBuilds[1].buildUrl:0;
                                 //For Getting time difference from last successful commits
                                 AllDashBuildsData.meanTime2Resolved =  getMeanTimeResolvedData(data.getAllBuildsStatusDetails,data.getAllBuildsDetails)+" Days";
                                 AllDashBuildsData.lastBuildStatus = getLastBuildStatus(data.getAllBuildsDetails);
@@ -668,6 +703,25 @@
                                 return date;
                             }
                         }
+                        //Changes for TDP details
+                        function processDefectResponse(data){
+                            AllDashDefectsData = {
+                                defectsCount :''
+                            };
+                            console.log("Current data is from processDefectResponse function : ", data);
+                            if(data.result !== undefined && data.result.length!==0 && data.result.length !== undefined){
+                                var count = 0;
+                                _(data.result[0].defectAnalysis.severities.info).forEach(function(val,key){
+                                    count += parseInt(val);
+                                });      
+                                console.log("current count is : ",count);
+                                AllDashDefectsData.defectsCount = count;
+                                console.log("current count is : ",AllDashDefectsData);
+                            }else{
+                                console.log("Defect Response error");
+                            }
+
+                        }
 
                         //Getting Repo Details End
                         switch (widgetName) {
@@ -695,6 +749,14 @@
                                 });
                                 break;
                             case 'tdp':
+                            var params = {
+                                componentId: widgetCompId
+                            };
+                            codeTdpData.details(params).then(function (data) {
+                                console.log("Tdp details : ",data);  
+                                processDefectResponse(data);
+                                ctrl.lastUpdated = data.lastUpdated;
+                            });
                                 break;
                             case 'deploy':
                                 break;
@@ -717,7 +779,8 @@
                                 scoreEnabled: obj.scoreEnabled,
                                 scoreDisplay: obj.scoreDisplay,
                                 totalBuildsLastWeek: (AllDashBuildsData !== undefined && AllDashBuildsData !== null && AllDashBuildsData !== '') ? AllDashBuildsData : 0,
-                                totalCommitsLastWeek: AllDashCommitsData
+                                totalCommitsLastWeek: AllDashCommitsData,
+                                totalDefectsCount: (AllDashDefectsData.defectsCount !== '')?AllDashDefectsData.defectsCount:0
                             };
 
                             if (board.isProduct) {

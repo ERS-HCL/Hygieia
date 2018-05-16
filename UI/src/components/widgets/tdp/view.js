@@ -22,6 +22,13 @@
 /**Below changes for displaying  TDP details*/
          $http.get("/api/defect?componentId=" + params.componentId).then(function(response){
             console.log("response.data is : ", response.data);
+            ctrl.tdpDetailsNew = {
+                categories:[],
+                severities:[],
+                priorities:[],
+                ageing:[],
+                status:''
+            };  
             // console.log("response.data.content.categories : ",response.data.result[0].defectAnalysis.categories);
             // console.log("response.data.content.severities : ",response.data.result[0].defectAnalysis.severities);
             // console.log("response.data.content.priorities : ",response.data.result[0].defectAnalysis.priorities);

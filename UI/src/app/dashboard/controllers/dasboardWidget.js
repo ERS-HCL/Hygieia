@@ -12,6 +12,5 @@
     function DashboardWidgetController($scope, $uibModal, $location, dashboardWidgetItem) {
             var ctrl = this;
             ctrl.allWidgetDetails = dashboardWidgetItem;
-            console.log("I am in ctrl.allWidgetDetails : ",ctrl.allWidgetDetails);
     }
 })();
