@@ -104,7 +104,8 @@
                 dashboardData.getComponent(obj.id).then(function (myres) {
                     var AllDashBuildsData = {};
                     var AllDashCommitsData = {};
-                    var AllDashDefectsData = {};
+                    var AllDashDefectsData = {};                    
+                    AllDashDefectsData.defectsCount = '';
                     //Updating Dashboard Data table details from widget
                     function updateDashboardDetailsForActiveWidgets(widgetName, widgetCompId) {
                         //Below Changes for getting Build Details
@@ -432,7 +433,6 @@
                             }
                             //Get Mean Time To Resolved Details 
                             function getMeanTimeResolvedData(successObject,BuildsData) {
-                                console.log("successObject is : ",successObject);
                                 var meanTimeTotal = 0;
                                 var timeDuration = 0;
                                 var count = 0;
@@ -463,7 +463,6 @@
                             }
                             //Get latest build status
                             function getLastBuildStatus (obj){
-                                console.log("obj is : ",obj);
                                 if(obj.length !== 0){
                                     if(obj[obj.length-1].buildStatus === "Success"){
                                         return "Success";
@@ -635,6 +634,8 @@
                             var lastThirtyDaysCommitDetails = [];
                             var newCommitDate = [];
                             var lastFiveDaysCommitDetails = [];
+                            console.log("all Commit data is : ",data);
+                            //Todo : set commit url to commits from "scmUrl"
 
                             // loop through and add to counts
                             _(data).forEach(function (commit) {
@@ -704,17 +705,14 @@
                             }
                         }
                         //Changes for TDP details
-                        function processDefectResponse(data){
-                            AllDashDefectsData = {
-                                defectsCount :''
-                            };
+                        function processDefectResponse(data){                            
+                            AllDashDefectsData.defectsCount = 0;
                             console.log("Current data is from processDefectResponse function : ", data);
                             if(data.result !== undefined && data.result.length!==0 && data.result.length !== undefined){
                                 var count = 0;
                                 _(data.result[0].defectAnalysis.severities.info).forEach(function(val,key){
                                     count += parseInt(val);
-                                });      
-                                console.log("current count is : ",count);
+                                });  
                                 AllDashDefectsData.defectsCount = count;
                                 console.log("current count is : ",AllDashDefectsData);
                             }else{
@@ -766,7 +764,9 @@
                     }
                     for (var z = 0; z < myres.activeWidgets.length; z++) {
                         updateDashboardDetailsForActiveWidgets(myres.activeWidgets[z], myres.application.components[0].id);
+
                         if (z === myres.activeWidgets.length - 1) {
+                            console.log("current AllDashDefectsData is : ",AllDashDefectsData);
                             var board = {
                                 id: obj.id,
                                 name: dashboardService.getDashboardTitle(obj),
@@ -780,7 +780,8 @@
                                 scoreDisplay: obj.scoreDisplay,
                                 totalBuildsLastWeek: (AllDashBuildsData !== undefined && AllDashBuildsData !== null && AllDashBuildsData !== '') ? AllDashBuildsData : 0,
                                 totalCommitsLastWeek: AllDashCommitsData,
-                                totalDefectsCount: (AllDashDefectsData.defectsCount !== '')?AllDashDefectsData.defectsCount:0
+                                //totalDefectsCount: (AllDashDefectsData.defectsCount !== undefined && AllDashDefectsData.defectsCount !== '')?AllDashDefectsData.defectsCount:0
+                                totalDefectsCount: AllDashDefectsData
                             };
 
                             if (board.isProduct) {
