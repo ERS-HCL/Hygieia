@@ -104,7 +104,7 @@
                 dashboardData.getComponent(obj.id).then(function (myres) {
                     var AllDashBuildsData = {};
                     var AllDashCommitsData = {};
-                    var AllDashDefectsData = {};                    
+                    var AllDashDefectsData = {};
                     AllDashDefectsData.defectsCount = '';
                     AllDashDefectsData.last7DaysDefectCount = '';
                     AllDashDefectsData.todayDefectCount = '';
@@ -317,7 +317,7 @@
                                     date.setHours(0, 0, 0, 0);
                                     return date;
                                 }
-                                function getAllBuildsData(){
+                                function getAllBuildsData() {
                                     return _.filter(data, function (build) {
                                         return build.endTime <= today.getTime();
                                     })
@@ -344,46 +344,46 @@
                                                 return build.endTime >= twentyOneDays.getTime();
                                             });
                                             if (getStatusDetails(currentData) !== 2) {
-                                                return {status:"Failed"};
+                                                return { status: "Failed" };
                                             } else {
-                                                var updatedData =  _.filter(currentData, function (build) {
+                                                var updatedData = _.filter(currentData, function (build) {
                                                     return build.buildStatus !== "Failure";
                                                 });
-                                                _(updatedData).forEach(function (build){
-                                                    if(build.number !== data[data.length-1].number){
+                                                _(updatedData).forEach(function (build) {
+                                                    if (build.number !== data[data.length - 1].number) {
                                                         lastBuildAvailable = true;
                                                     }
                                                 });
-                                                if(lastBuildAvailable){
-                                                    updatedData.push(data[data.length-1]);
+                                                if (lastBuildAvailable) {
+                                                    updatedData.push(data[data.length - 1]);
                                                 }
                                                 return updatedData;
                                             }
                                         } else {
-                                            var updatedData =  _.filter(currentData, function (build) {
+                                            var updatedData = _.filter(currentData, function (build) {
                                                 return build.buildStatus !== "Failure";
                                             });
-                                            _(updatedData).forEach(function (build){
-                                                if(build.number !== data[data.length-1].number){
+                                            _(updatedData).forEach(function (build) {
+                                                if (build.number !== data[data.length - 1].number) {
                                                     lastBuildAvailable = true;
                                                 }
                                             });
-                                            if(lastBuildAvailable){
-                                                updatedData.push(data[data.length-1]);
+                                            if (lastBuildAvailable) {
+                                                updatedData.push(data[data.length - 1]);
                                             }
                                             return updatedData;
                                         }
                                     } else {
-                                        var updatedData =  _.filter(currentData, function (build) {
+                                        var updatedData = _.filter(currentData, function (build) {
                                             return build.buildStatus !== "Failure";
                                         });
-                                        _(updatedData).forEach(function (build){
-                                            if(build.number !== data[data.length-1].number){
+                                        _(updatedData).forEach(function (build) {
+                                            if (build.number !== data[data.length - 1].number) {
                                                 lastBuildAvailable = true;
                                             }
                                         });
-                                        if(lastBuildAvailable){
-                                            updatedData.push(data[data.length-1]);
+                                        if (lastBuildAvailable) {
+                                            updatedData.push(data[data.length - 1]);
                                         }
                                         return updatedData;
                                     }
@@ -410,14 +410,14 @@
                             function calculateDays(startDate, endDate) {
                                 var start_date = moment(startDate, 'YYYY-MM-DD HH:mm:ss');
                                 var end_date = moment(endDate, 'YYYY-MM-DD HH:mm:ss');
-                                var duration = moment.duration(end_date.diff(start_date));
+                                //var duration = moment.duration(end_date.diff(start_date));
                                 var startArr = startDate.split("/");
-                                // var endArr = endDate.split("/");
-                                // var a = moment([startArr[2], startArr[0], startArr[1]]);
-                                // var b = moment([endArr[2], endArr[0], endArr[1]]);
-                                // var dur = a.diff(b, 'days'); 
-                                var days = duration.asDays();
-                                return days;
+                                var endArr = endDate.split("/");
+                                var a = moment([parseInt(startArr[2]), parseInt(startArr[0]), parseInt(startArr[1])]);
+                                var b = moment([parseInt(endArr[2]), parseInt(endArr[0]), parseInt(endArr[1])]);
+                                var days = b.diff(a, 'days');
+                                // var days = duration.asDays();
+                                 return days;
                             }
                             //For Reformating data from json data for displaying text in Tabular content
                             function reformattingObject(obj) {
@@ -435,11 +435,11 @@
                                 return updatedObject;
                             }
                             //Get Mean Time To Resolved Details 
-                            function getMeanTimeResolvedData(successObject,BuildsData) {
+                            function getMeanTimeResolvedData(successObject, BuildsData) {
                                 var meanTimeTotal = 0;
                                 var timeDuration = 0;
                                 var count = 0;
-                                if(successObject!==0 && successObject.status === undefined){
+                                if (successObject.status !== "Failed") {
                                     for (var i = 0; i <= successObject.length - 1; i++) {
                                         timeDuration = successObject[i].timeDuration;
                                         var endTime1 = successObject[i].endTime;
@@ -451,29 +451,29 @@
                                             } else {
                                                 meanTimeTotal += 0;
                                             }
-    
+
                                         }
                                     }
-                                }else{
+                                } else {
                                     meanTimeTotal = 0;
                                 }
-                                if(meanTimeTotal !== 0 && count !==0){
-                                    return Math.ceil(meanTimeTotal/count);
-                                }else{
+                                if (meanTimeTotal !== 0 && count !== 0) {
+                                    return Math.ceil(meanTimeTotal / count);
+                                } else {
                                     return 0;
                                 }
-                                
+
                             }
                             //Get latest build status
-                            function getLastBuildStatus (obj){
-                                if(obj.length !== 0){
-                                    if(obj[obj.length-1].buildStatus === "Success"){
+                            function getLastBuildStatus(obj) {
+                                if (obj.length !== 0) {
+                                    if (obj[obj.length - 1].buildStatus === "Success") {
                                         return "Success";
                                     }
-                                    if(obj[obj.length-1].buildStatus === "Failure"){
+                                    if (obj[obj.length - 1].buildStatus === "Failure") {
                                         return "Failure";
                                     }
-                                }else{
+                                } else {
                                     return 0;
                                 }
                             }
@@ -535,30 +535,30 @@
                                 AllDashBuildsData.latestBuildsData = reformattingObject(ctrl.DashrecentBuilds);
                                 AllDashBuildsData.last2SuccessBuilds = {
                                     recentBuild: {
-                                        buildId:'',
-                                        buildStatus:'',
-                                        buildTime:'',
-                                        buildUrl:''
+                                        buildId: '',
+                                        buildStatus: '',
+                                        buildTime: '',
+                                        buildUrl: ''
                                     },
                                     recentBuildNext: {
-                                        buildId:'',
-                                        buildStatus:'',
-                                        buildTime:'',
-                                        buildUrl:''
+                                        buildId: '',
+                                        buildStatus: '',
+                                        buildTime: '',
+                                        buildUrl: ''
                                     }
                                 };
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0 && AllDashBuildsData.AllSuccessBuilds[1].number !== undefined && AllDashBuildsData.AllSuccessBuilds[1].number !== '')?AllDashBuildsData.AllSuccessBuilds[1].number:0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0 && AllDashBuildsData.AllSuccessBuilds[1].number !== undefined && AllDashBuildsData.AllSuccessBuilds[1].number !== '') ? AllDashBuildsData.AllSuccessBuilds[1].number : 0;
                                 AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = "Success";
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (AllDashBuildsData.AllSuccessBuilds.length !== 0)?moment.duration(AllDashBuildsData.AllSuccessBuilds[1].duration).minutes() + " Mins":0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0)?AllDashBuildsData.AllSuccessBuilds[1].buildUrl:0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0)?AllDashBuildsData.AllSuccessBuilds[0].number:0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? moment.duration(AllDashBuildsData.AllSuccessBuilds[1].duration).minutes() + " Mins" : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[1].buildUrl : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[0].number : 0;
                                 AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = "Success";
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime =  (AllDashBuildsData.AllSuccessBuilds.length !== 0)?moment.duration(AllDashBuildsData.AllSuccessBuilds[0].duration).minutes() + " Mins":0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0)?AllDashBuildsData.AllSuccessBuilds[1].buildUrl:0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? moment.duration(AllDashBuildsData.AllSuccessBuilds[0].duration).minutes() + " Mins" : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[1].buildUrl : 0;
                                 //For Getting time difference from last successful commits
-                                AllDashBuildsData.meanTime2Resolved =  getMeanTimeResolvedData(data.getAllBuildsStatusDetails,data.getAllBuildsDetails)+" Days";
+                                AllDashBuildsData.meanTime2Resolved = getMeanTimeResolvedData(data.getAllBuildsStatusDetails, data.getAllBuildsDetails) + " Days";
                                 AllDashBuildsData.lastBuildStatus = getLastBuildStatus(data.getAllBuildsDetails);
-                                //});
+                              //});
                             });
                             //endregion
                         }
@@ -618,11 +618,9 @@
                             var sevenDays = toMidnight(new Date());
                             var fourteenDays = toMidnight(new Date());
                             var thirtyDays = toMidnight(new Date());
-                            var fiveDays = today;
                             sevenDays.setDate(sevenDays.getDate() - 7);
                             fourteenDays.setDate(fourteenDays.getDate() - 14);
                             thirtyDays.setDate(thirtyDays.getDate() - 30);
-                            fiveDays.setDate(fiveDays.getDate() - 5);
 
                             var lastDayCommitCount = 0;
                             var lastDayCommitContributors = [];
@@ -632,12 +630,9 @@
 
                             var lastFourteenDayCommitCount = 0;
                             var lastFourteenDaysCommitContributors = [];
-
-                            var lastThirtyDaysCommitCount = 0;
-                            var lastThirtyDaysCommitDetails = [];
-                            var newCommitDate = [];
-                            var lastFiveDaysCommitDetails = [];
-                            console.log("all Commit data is : ",data);
+                            //testing 7 days data 
+                            var testing7days = [];
+                            var lastSevenDaysCommitDetails = [];
                             //Todo : set commit url to commits from "scmUrl"
 
                             // loop through and add to counts
@@ -649,36 +644,30 @@
                                         lastDayCommitContributors.push(commit.scmAuthor);
                                     }
                                 }
-                                if (commit.scmCommitTimestamp >= thirtyDays.getTime()) {
-                                    lastThirtyDaysCommitCount++;
-                                    if (newCommitDate.indexOf(moment(commit.scmCommitTimestamp).format('ll')) > -1) {
-                                        lastThirtyDaysCommitCount++;
-                                        _(lastThirtyDaysCommitDetails).forEach(function (value) {
-                                            if (value.CommitDate === moment(commit.scmCommitTimestamp).format('ll')) {
-                                                value.CommitsCount = lastThirtyDaysCommitCount
-                                            }
-                                        });
-                                    } else {
-                                        lastThirtyDaysCommitCount = 0;
-                                        lastThirtyDaysCommitCount++;
-                                        newCommitDate.push(moment(commit.scmCommitTimestamp).format('ll'));
-                                        lastThirtyDaysCommitDetails.push({
-                                            "CommitDate": moment(commit.scmCommitTimestamp).format('ll'),
-                                            "CommitsCount": lastThirtyDaysCommitCount
-                                        });
-                                    }
 
-                                }
-                                lastFiveDaysCommitDetails = lastThirtyDaysCommitDetails;
-                                lastFiveDaysCommitDetails = lastFiveDaysCommitDetails.slice((lastFiveDaysCommitDetails.length - 5), lastFiveDaysCommitDetails.length);
                                 if (commit.scmCommitTimestamp >= sevenDays.getTime()) {
                                     lastSevenDayCommitCount++;
 
                                     if (lastSevenDaysCommitContributors.indexOf(commit.scmAuthor) == -1) {
                                         lastSevenDaysCommitContributors.push(commit.scmAuthor);
                                     }
+                                    if (testing7days.indexOf(moment(commit.scmCommitTimestamp).format('ll')) > -1) {
+                                        _(lastSevenDaysCommitDetails).forEach(function (value) {
+                                            if (value.CommitDate === moment(commit.scmCommitTimestamp).format('ll')) {
+                                                value.CommitCount += 1;
+                                                value.Commit.push(commit);
+                                            }
+                                        });
+                                    } else {
+                                        testing7days.push(moment(commit.scmCommitTimestamp).format('ll'));
+                                        lastSevenDaysCommitDetails.push({
+                                            "CommitDate": moment(commit.scmCommitTimestamp).format('ll'),
+                                            "CommitCount": lastSevenDayCommitCount,
+                                            "Commit": [commit]
+                                        });
+                                    }
+                                } else {
                                 }
-
                                 if (commit.scmCommitTimestamp >= fourteenDays.getTime()) {
                                     lastFourteenDayCommitCount++;
                                     ctrl.commits.push(commit);
@@ -687,7 +676,6 @@
                                     }
                                 }
                             });
-
                             ctrl.lastDayCommitCount = lastDayCommitCount;
                             ctrl.lastDayCommitContributorCount = lastDayCommitContributors.length;
                             ctrl.lastSevenDaysCommitCount = lastSevenDayCommitCount;
@@ -696,11 +684,10 @@
                             ctrl.lastFourteenDaysCommitContributorCount = lastFourteenDaysCommitContributors.length;
                             AllDashCommitsData.lastSevenDaysCommitCount = lastSevenDayCommitCount;
                             AllDashCommitsData.lastDayCommitCount = lastDayCommitCount;
-                            AllDashCommitsData.lastFiveDaysCommitDetails = lastFiveDaysCommitDetails;
+                            AllDashCommitsData.lastSevenDaysCommitDetails = lastSevenDaysCommitDetails;
                             AllDashCommitsData.avgDailyChange = (ctrl.lastSevenDaysCommitCount !== '' && ctrl.lastSevenDaysCommitCount !== null && ctrl.lastSevenDaysCommitCount !== undefined && ctrl.lastSevenDaysCommitCount !== 0)
                                 ? ((Math.ceil(7 / ctrl.lastSevenDaysCommitCount) > 1) ? (Math.ceil(7 / ctrl.lastSevenDaysCommitCount) + " Days") : (Math.ceil(7 / ctrl.lastSevenDaysCommitCount) + " Day"))
                                 : 0 + " Days";
-
 
                             function toMidnight(date) {
                                 date.setHours(0, 0, 0, 0);
@@ -708,63 +695,66 @@
                             }
                         }
                         //Changes for TDP details
-                        function processDefectResponse(data){   
+                        function processDefectResponse(data) {
+                            var today = toMidnight(new Date());
                             var avgDefectDetails = {
-                                avgDefectData :[]
+                                avgDefectData: []
                             };
-                            
+
                             var lastDefectAvailable = false;
-                            //Getting defects details based on days - start
-                            //Getting defects details based on days - end                         
                             AllDashDefectsData.defectsCount = 0;
                             AllDashDefectsData.last7DaysDefectCount = 0;
                             AllDashDefectsData.todayDefectCount = 0;
                             AllDashDefectsData.trendingData.last7DaysDefects = [];
                             AllDashDefectsData.avgDailyChange = 0;
                             AllDashDefectsData.defectTdpUrl = "#";
-                            console.log("Current data is from processDefectResponse function : ", data);
-                            if(data.result !== undefined && data.result.length!==0 && data.result.length !== undefined){
+                            if (data.result !== undefined && data.result.length !== 0 && data.result.length !== undefined) {
                                 var count = 0;
-                                _(data.result[0].defectAnalysis.severities.info).forEach(function(val,key){
+                                _(data.result[0].defectAnalysis.severities.info).forEach(function (val, key) {
                                     count += parseInt(val);
-                                });  
+                                });
                                 AllDashDefectsData.defectsCount = count;
-                                AllDashDefectsData.last7DaysDefectCount =  _.filter(data.result[0].defectAnalysis.detail, function (defect) {
-                                    return defect.age <= 7;
+                                AllDashDefectsData.last7DaysDefectCount = _.filter(data.result[0].defectAnalysis.detail, function (defect) {
+                                    return defect.age < 7;
                                 }).length;
-                                AllDashDefectsData.todayDefectCount =  _.filter(data.result[0].defectAnalysis.detail, function (defect) {
-                                    return defect.age == 1;
-                                }).length;
-                                // avgDefectDetails.avgDefectData = _.filter(data.result[0].defectAnalysis.detail, function (defect) {
-                                //     return defect.Status == "Retest Complete";
-                                // });
-                                // _(avgDefectDetails.avgDefectData).forEach(function (defect){
-                                //     if(defect.Id !== data.result[0].defectAnalysis.detail[0].Id){
-                                //         lastDefectAvailable = true;
-                                //     }
-                                // });
-                                // if(lastDefectAvailable){
-                                //     avgDefectDetails.avgDefectData.push(data.result[0].defectAnalysis.detail[0]);
-                                // }
-                                AllDashDefectsData.avgDailyChange = (AllDashDefectsData.last7DaysDefectCount !== '' && AllDashDefectsData.last7DaysDefectCount !== null && AllDashDefectsData.last7DaysDefectCount !== undefined && AllDashDefectsData.last7DaysDefectCount !== 0)
-                                ? ((Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) > 1) ? (Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) + " Days") : (Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) + " Day"))
-                                : 0 + " Days";
-                                AllDashDefectsData.defectTdpUrl = data.result[0].queryURL;
-                                console.log("AllDashDefectsData.defectTdpUrl is :",data.result[0]);
-                                //For getting first 7 element values
-                                for(var i=0;i<=7;i++){
-                                    var defectFormatting = {
-                                        defectID: data.result[0].defectAnalysis.detail[i].Id,
-                                        priority: data.result[0].defectAnalysis.detail[i].Priority,
-                                        severity: data.result[0].defectAnalysis.detail[i].Severity,
-                                        status: data.result[0].defectAnalysis.detail[i].Status
+                                var testingDefectDetails = [];
+                                var groupBy = function (xs, key) {
+                                    return xs.reduce(function (rv, x) {
+                                        (rv[x[key]] = rv[x[key]] || []).push(x);
+                                        return rv;
+                                    }, {});
+                                };
+                                
+                                var groubedByAge = groupBy(data.result[0].defectAnalysis.detail, 'age');
+                                var AgeingDetails = [];
+                                var AgeingDetailsAll = [];
+                                _(groubedByAge).forEach(function(val,key){
+                                    AgeingDetails.push(parseInt(key));
+                                });
+                                for(var i=0;i <= AgeingDetails.length-1;i++){
+                                    if(AgeingDetails.indexOf(i) !== -1){
+                                        AgeingDetailsAll.push({
+                                        "ageingDays":i,
+                                        "value":groubedByAge[i],
+                                        "ageingDate":moment().subtract(i, "days").format("DD-MM-YYYY")
+                                    });
                                     }
-                                    AllDashDefectsData.trendingData.last7DaysDefects.push(defectFormatting);
-                                    
                                 }
-                                console.log("current count is : ",AllDashDefectsData);
-                            }else{
-                                console.log("Defect Response error");
+                                AllDashDefectsData.todayDefectCount = _.filter(data.result[0].defectAnalysis.detail, function (defect) {
+                                    return defect.age < 1;
+                                }).length;
+                                AllDashDefectsData.avgDailyChange = (AllDashDefectsData.last7DaysDefectCount !== '' && AllDashDefectsData.last7DaysDefectCount !== null && AllDashDefectsData.last7DaysDefectCount !== undefined && AllDashDefectsData.last7DaysDefectCount !== 0)
+                                    ? ((Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) > 1) ? (Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) + " Days") : (Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) + " Day"))
+                                    : 0 + " Days";
+                                AllDashDefectsData.defectTdpUrl = data.result[0].queryURL;
+                                // }
+                                AllDashDefectsData.trendingData.last7DaysDefects = AgeingDetailsAll;
+                            } else {
+                                //console.log("Defect Response error");
+                            }
+                            function toMidnight(date) {
+                                date.setHours(0, 0, 0, 0);
+                                return date;
                             }
 
                         }
@@ -795,14 +785,13 @@
                                 });
                                 break;
                             case 'tdp':
-                            var params = {
-                                componentId: widgetCompId
-                            };
-                            codeTdpData.details(params).then(function (data) {
-                                console.log("Tdp details : ",data);  
-                                processDefectResponse(data);
-                                ctrl.lastUpdated = data.lastUpdated;
-                            });
+                                var params = {
+                                    componentId: widgetCompId
+                                };
+                                codeTdpData.details(params).then(function (data) {
+                                    processDefectResponse(data);
+                                    ctrl.lastUpdated = data.lastUpdated;
+                                });
                                 break;
                             case 'deploy':
                                 break;
@@ -814,7 +803,6 @@
                         updateDashboardDetailsForActiveWidgets(myres.activeWidgets[z], myres.application.components[0].id);
 
                         if (z === myres.activeWidgets.length - 1) {
-                            console.log("current AllDashDefectsData is : ",AllDashDefectsData);
                             var board = {
                                 id: obj.id,
                                 name: dashboardService.getDashboardTitle(obj),
