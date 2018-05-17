@@ -13,8 +13,8 @@
             <tbody>
             <tr>
                 <td><a href="{{ctrl.allWidgetDetails.Defects.totalDefectsCount.defectTdpUrl}}">{{ctrl.allWidgetDetails.Defects.totalDefectsCount.defectsCount}}</a></td>
-                <td>{{ctrl.allWidgetDetails.Defects.totalDefectsCount.last7DaysDefectCount}}</td>
-                <td><p ng-repeat="trend in ctrl.allWidgetDetails.Defects.totalDefectsCount.trendingData.last7DaysDefects"><span>{{trend.defectID}}</span><span>{{trend.priority}}</span><span>{{trend.severity}}</span><span>{{trend.status}}</span></p>
+                <td><a href="{{ctrl.allWidgetDetails.Defects.totalDefectsCount.defectTdpUrl}}">{{ctrl.allWidgetDetails.Defects.totalDefectsCount.last7DaysDefectCount}}</a></td>
+                <td><p ng-repeat="trend in ctrl.allWidgetDetails.Defects.totalDefectsCount.trendingData.last7DaysDefects | limitTo : 5"><span style="padding:5px;">Age {{trend.ageingDays}}</span><span style="padding:5px;">{{trend.ageingDate}}</span><span style="padding:5px;">{{trend.value.length}} Defects</span></p>
                 </td>
                 <td>{{ctrl.allWidgetDetails.Defects.totalDefectsCount.avgDailyChange}}</td>
             </tr>
