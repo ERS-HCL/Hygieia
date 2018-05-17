@@ -167,13 +167,13 @@ public class DefaultSonarClient implements SonarClient {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            String sso_url = ssoURL; //  "https://www.e-access.att.com/pkmslogin.form";
+            String sso_url = ssoURL;
             HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
             ResponseEntity<String> response = this.rest.postForEntity( sso_url, request , String.class );
             String PD_ID= "";
             //LOG.info(response.getBody());
 
-            String successUrl = successURL; //"https://www.e-access.att.com/empsvcs/hrpinmgt/pagSuccess/";
+            String successUrl = successURL;
             ResponseEntity<String> successResponse = this.rest.exchange(successUrl, HttpMethod.GET, this.httpHeaders, String.class);
             //LOG.info("cookie response " + successResponse.getBody());
 
@@ -195,17 +195,17 @@ public class DefaultSonarClient implements SonarClient {
                 this.httpHeaders = new HttpEntity<String>(cookieHeaders);
             }
 
-            String sonarInitUrl = loginInitURL +PD_ID; //  "http://sonar.it.att.com/sessions/new?loginflag=true&failoverCookie="+PD_ID;
+            String sonarInitUrl = loginInitURL +PD_ID;
             LOG.info(" Login Init URL " + sonarInitUrl);
             ResponseEntity<String> sonarInitResponse = this.rest.exchange(sonarInitUrl, HttpMethod.GET, this.httpHeaders, String.class);
             LOG.info(sonarInitResponse.getBody());
 
-            String sonarSessionUrl = sessionInitURL; //  "http://sonar.it.att.com/sessions/new?loginflag=true&failoverCookie="+PD_ID;
+            String sonarSessionUrl = sessionInitURL;
             LOG.info(" Session Init URL " + sonarSessionUrl);
             ResponseEntity<String> sonarSessionResponse = this.rest.exchange(sonarSessionUrl, HttpMethod.GET, this.httpHeaders, String.class);
             LOG.info(sonarSessionResponse.getBody());
 
-            String sonarAuthUrl = sessionAuthURL; //  "http://sonar.it.att.com/sessions/new?loginflag=true&failoverCookie="+PD_ID;
+            String sonarAuthUrl = sessionAuthURL;
             LOG.info(" Sonar Auth URL " + sonarAuthUrl);
             ResponseEntity<String> sonarAuthResponse = this.rest.exchange(sonarAuthUrl, HttpMethod.GET, this.httpHeaders, String.class);
             LOG.info(sonarAuthResponse.getBody());

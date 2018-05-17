@@ -163,7 +163,7 @@ public class DefaultBitbucketServerClient implements GitClient {
 		 * https://username@company.com/scm/project/repository.git
 		 * ssh://git@company.com/~username/repository.git
 		 * https://username@company.com/scm/~username/repository.git
-		 * https://pa283q@codecloud.web.att.com/scm/st_idse/cartms.git
+		 *
 		 */
 		
 		String repoUrlRaw = rawUrl;
@@ -245,8 +245,6 @@ public class DefaultBitbucketServerClient implements GitClient {
 
 			//String repoSettingUrl = "https://" +  settings.getHost() + "/" + settings.getApi() ;
 			URI queryUri = buildUri((String) repo.getOptions().get("url"), repo.getBranch(), repo.getLastUpdateCommit());
-			//https://codecloud.web.att.com/rest/api/1.0/projects/st_idse/repos/serviceavailabilityms/settings/pull-requests
-			//HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 
 			if(queryUri != null && queryUri.getPath() != null && queryUri.getPath().contains("commits")){
 
