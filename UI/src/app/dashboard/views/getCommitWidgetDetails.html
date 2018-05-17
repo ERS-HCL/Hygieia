@@ -15,7 +15,7 @@
                 <tr>
                     <td>{{ctrl.allWidgetDetails.Commits.totalCommitsLastWeek.lastDayCommitCount}}</td>
                     <td>{{ctrl.allWidgetDetails.Commits.totalCommitsLastWeek.lastSevenDaysCommitCount}}</td>
-                    <td><p ng-repeat = "commitData in ctrl.allWidgetDetails.Commits.totalCommitsLastWeek.lastFiveDaysCommitDetails">{{commitData.CommitDate}} - {{commitData.CommitsCount}} Commits</p>
+                    <td><p ng-repeat = "commitData in ctrl.allWidgetDetails.Commits.totalCommitsLastWeek.lastSevenDaysCommitDetails">{{commitData.CommitDate}} - {{commitData.Commit.length}} Commits</p>
                         
                     </td>
                     <td>{{ctrl.allWidgetDetails.Commits.totalCommitsLastWeek.avgDailyChange}}</td>
