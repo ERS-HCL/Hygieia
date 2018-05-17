@@ -1,4 +1,4 @@
-**IDSE Dashboard Developer Guide**
+**Quality Metrics Dashboard Developer Guide**
 
 **Repo Detail**
 
