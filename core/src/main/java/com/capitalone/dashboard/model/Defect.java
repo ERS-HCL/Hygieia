@@ -1,6 +1,7 @@
 package com.capitalone.dashboard.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -9,6 +10,7 @@ import java.util.Date;
 /**
  * Created by begin.samuel on 24-04-2018.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Defect implements Serializable{
 
 

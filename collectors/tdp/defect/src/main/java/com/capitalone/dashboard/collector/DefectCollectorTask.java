@@ -222,8 +222,11 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 			try{
 
 				String fileName = defectRepo.getQueryName() + ".csv";
-				String csvFile = defectSettings.getDownloadpath() + "\\" + fileName;
-				LOGGER.info("csv File" + csvFile);
+				if(defectRepo != null && defectRepo.getQueryName() != null){
+					LOGGER.info("csv File:start#" + defectRepo.getQueryName()+"#end");
+				}
+				String csvFile = defectSettings.getDownloadpath() +  fileName;
+				LOGGER.info("csv File:start#" + csvFile+"#end");
 				File  csvDiskFile = new File(csvFile);
 				LOGGER.info(" CSV File : {}", csvFile);
 				if(csvDiskFile.exists()) {
@@ -271,14 +274,14 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 
 	public <T> List<T> readCSVFile(Class<T> type, String fileName){
 
-		File csvFile = null;
+		File file = null;
 
 		try {
 			CsvSchema bootstrapSchema = CsvSchema.emptySchema().withHeader().withColumnSeparator('\t');
 			CsvMapper mapper = new CsvMapper();
-			File file = new File(fileName);
+			file = new File(fileName);
 			MappingIterator<T> readValues = null;
-			if(file.exists()) {
+			if(file.exists()  ) {
 				if (file.canRead()) {
 					readValues = mapper.reader(type).with(bootstrapSchema).readValues(file);
 				}
@@ -288,6 +291,7 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 					List<T>  arrlist = readValues.readAll();
 					if (file.canWrite()) {
 						 file.delete();
+						 LOGGER.info( " Deleting files after reading content");
 					}
 
 					return arrlist;
@@ -301,6 +305,12 @@ public class DefectCollectorTask extends CollectorTask<DefectCollector>{
 			}
 		} catch (Exception e) {
 			LOGGER.error( " Exception while reading Files : {}" , e);
+			if(file != null){
+				if(file.exists()) {
+					LOGGER.error( " Deleting files while getting error ");
+					file.delete();
+				}
+			}
 			return Collections.emptyList();
 		}
 
