@@ -150,12 +150,12 @@
                                 current-page="currentPage"
                                 total-items= ctrl.getTotalItems()
                                 >
-                                <td title="{{item.name}}"class=" clickable" ng-style="{'background-color': (item.totalBuildsLastWeek.lastBuildStatus === 'Failure') ? 'rgb(234, 170, 170)' : 'rgb(205, 241, 205)'}" ng-click="ctrl.open(item.id)">
+                                <td title="{{item.name}}"class=" clickable" ng-style="{'background-color': (item.totalBuildsLastWeek.lastBuildStatus === 'Success') ? 'rgb(205, 241, 205)' : 'rgb(234, 170, 170)'}" ng-click="ctrl.open(item.id)">
                               {{item.name}}</td>
-                              <td class="clickable" ng-click="ctrl.getCurrentWidgetDetails(item.name,'Build',item.totalBuildsLastWeek.DashtotalBuildsLastWeek,item.id,item)">{{item.totalBuildsLastWeek.DashtotalBuildsLastWeek}}<b>...</b></td>
-                              <td>{{item.totalBuildsLastWeek.meanTime2Resolved}}<b>...</b></td>
-                              <td class = "clickable" ng-click="ctrl.getCurrentWidgetDetails(item.name,'Defect',item.totalDefectsCount.defectsCount,item.id,item)">{{item.totalDefectsCount.defectsCount}}<b>...</b></td>
-                              <td class="clickable" ng-click="ctrl.getCurrentWidgetDetails(item.name,'Commit',item.totalCommitsLastWeek.lastSevenDaysCommitCount,item.id,item)">{{item.totalCommitsLastWeek.avgDailyChange}}<b>...</b></td>
+                              <td class="clickable" ng-click="ctrl.getCurrentWidgetDetails(item.name,'Build',item.totalBuildsLastWeek.DashtotalBuildsLastWeek,item.id,item)">{{item.totalBuildsLastWeek.DashtotalBuildsLastWeek}}&nbsp;&nbsp;<b><u>...</u></b></td>
+                              <td>{{item.totalBuildsLastWeek.meanTime2Resolved}}</td>
+                              <td class = "clickable" ng-click="ctrl.getCurrentWidgetDetails(item.name,'Defect',item.totalDefectsCount.defectsCount,item.id,item)">{{item.totalDefectsCount.defectsCount}}&nbsp;&nbsp;<b><u>...</u></b></td>
+                              <td class="clickable" ng-click="ctrl.getCurrentWidgetDetails(item.name,'Commit',item.totalCommitsLastWeek.lastSevenDaysCommitCount,item.id,item)">{{item.totalCommitsLastWeek.avgDailyChange}}&nbsp;&nbsp;<b><u>...</u></b></td>
                               <td><span class="pull-right">
 
 

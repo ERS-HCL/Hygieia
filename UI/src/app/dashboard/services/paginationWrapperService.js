@@ -425,7 +425,7 @@
                                 _(obj).forEach(function (build) {
                                     updatedObject.push({
                                         recentBuild: {
-                                            buildId: build.number,
+                                            buildId: parseInt(build.number),
                                             buildStatus: build.status,
                                             buildTime: moment(build.endTime).minutes() + " Mins",
                                             buildUrl: build.buildUrl
@@ -467,11 +467,16 @@
                             //Get latest build status
                             function getLastBuildStatus(obj) {
                                 if (obj.length !== 0) {
-                                    if (obj[obj.length - 1].buildStatus === "Success") {
+                                    //if (obj[obj.length - 1].buildStatus === "Success") {
+                                    if (obj[obj.length - 1].recentBuild.buildStatus === "success") {
                                         return "Success";
                                     }
-                                    if (obj[obj.length - 1].buildStatus === "Failure") {
+                                    //if (obj[obj.length - 1].buildStatus === "Failure") {
+                                    if (obj[obj.length - 1].recentBuild.buildStatus === "failure") {
                                         return "Failure";
+                                    }
+                                    if (obj[obj.length - 1].recentBuild.buildStatus === "aborted") {
+                                        return "Aborted";
                                     }
                                 } else {
                                     return 0;
@@ -532,7 +537,14 @@
                                 ctrl.DashtotalBuildsLastMonth = data.fourteenDays;
                                 AllDashBuildsData.AllSuccessBuilds = data.getAllBuildsSuccessData;
                                 AllDashBuildsData.AllSuccessBuilds = AllDashBuildsData.AllSuccessBuilds.slice((AllDashBuildsData.AllSuccessBuilds.length - 2), AllDashBuildsData.AllSuccessBuilds.length);
-                                AllDashBuildsData.latestBuildsData = reformattingObject(ctrl.DashrecentBuilds);
+                                AllDashBuildsData.latestBuildsData = reformattingObject(ctrl.DashrecentBuilds); 
+                                AllDashBuildsData.latestBuildsData = (AllDashBuildsData.latestBuildsData).sort(function(obj1, obj2) {
+                                    // Ascending: first age less than the previous
+                                    //return parseInt(obj1.recentBuild.buildId) - parseInt(obj2.recentBuild.buildId);
+                                    return obj1.recentBuild.buildId - obj2.recentBuild.buildId;
+                                });
+                                //AllDashBuildsData.lastBuildStatus = getLastBuildStatus(data.getAllBuildsDetails);
+                                AllDashBuildsData.lastBuildStatus = getLastBuildStatus(AllDashBuildsData.latestBuildsData);
                                 AllDashBuildsData.last2SuccessBuilds = {
                                     recentBuild: {
                                         buildId: '',
@@ -547,17 +559,29 @@
                                         buildUrl: ''
                                     }
                                 };
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0 && AllDashBuildsData.AllSuccessBuilds[1].number !== undefined && AllDashBuildsData.AllSuccessBuilds[1].number !== '') ? AllDashBuildsData.AllSuccessBuilds[1].number : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = "Success";
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? moment.duration(AllDashBuildsData.AllSuccessBuilds[1].duration).minutes() + " Mins" : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[1].buildUrl : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[0].number : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = "Success";
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? moment.duration(AllDashBuildsData.AllSuccessBuilds[0].duration).minutes() + " Mins" : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[1].buildUrl : 0;
+                                /* Below changes for getting recent Builds details from last success builds only
+                                // AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0 && AllDashBuildsData.AllSuccessBuilds[1].number !== undefined && AllDashBuildsData.AllSuccessBuilds[1].number !== '') ? AllDashBuildsData.AllSuccessBuilds[1].number : 0;
+                                // AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = "Success";
+                                // AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? moment.duration(AllDashBuildsData.AllSuccessBuilds[1].duration).minutes() + " Mins" : 0;
+                                // AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[1].buildUrl : 0;
+                                // AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[0].number : 0;
+                                // AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = "Success";
+                                // AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? moment.duration(AllDashBuildsData.AllSuccessBuilds[0].duration).minutes() + " Mins" : 0;
+                                // AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[1].buildUrl : 0;
+                                */
+
+                                /*To get recent Builds Details from all builds details*/
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildId : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildStatus !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildStatus !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildStatus : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildTime : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildUrl : "#";
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildId : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildStatus !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildStatus !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildStatus : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildTime : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildUrl : "#";
+                                                              
                                 //For Getting time difference from last successful commits
                                 AllDashBuildsData.meanTime2Resolved = getMeanTimeResolvedData(data.getAllBuildsStatusDetails, data.getAllBuildsDetails) + " Days";
-                                AllDashBuildsData.lastBuildStatus = getLastBuildStatus(data.getAllBuildsDetails);
                               //});
                             });
                             //endregion

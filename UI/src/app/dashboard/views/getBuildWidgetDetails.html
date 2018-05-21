@@ -5,7 +5,7 @@
             <label class="modal-label">{{ctrl.allWidgetDetails.Builds.widgetName}}</label>
             <thead>
             <tr>
-                <th>Recent Build Time</th>
+                <th>Recent Build</th>
                 <th>Next Recent Build</th>
                 <th>5 Recent Build</th>
                 <th>Mean Time to Resolve</th>
@@ -13,11 +13,11 @@
             </thead>
             <tbody>
             <tr>
-                <td>Build<span style="padding-left:5px;"><a style="color:#317adc;" href="{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild.buildUrl}}">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild.buildId}}</a></span><span style="color:green;padding-left:5px;">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild.buildStatus | uppercase}}</span><span style="padding-left:5px;">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild.buildTime}}</span>
+                <td>Build<span style="padding-left:5px;"><a style="color:#317adc;" href="{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild.buildUrl}}">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild.buildId}}</a></span><span ng-style="{'color': (ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild === 'Success') ? 'green' : 'red','padding-left':'5px'}">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild.buildStatus | uppercase}}</span><span style="padding-left:5px;">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild.buildTime}}</span>
                 </td>
-                <td>Build<span style="padding-left:5px;"><a style="color:#317adc;" href="{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuildNext.buildUrl}}">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuildNext.buildId}}</a></span><span style="color:green; padding-left:5px;">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuildNext.buildStatus | uppercase}}</span><span style="padding-left:5px;">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuildNext.buildTime}}</span>
+                <td>Build<span style="padding-left:5px;"><a style="color:#317adc;" href="{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuildNext.buildUrl}}">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuildNext.buildId}}</a></span><span ng-style="{'color': (ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuild === 'Success') ? 'green' : 'red','padding-left':'5px'}">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuildNext.buildStatus | uppercase}}</span><span style="padding-left:5px;">{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.last2SuccessBuilds.recentBuildNext.buildTime}}</span>
                 </td>
-                <td><p ng-repeat="latestItem in ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.latestBuildsData">Build<span style="padding-left:5px;"><a style="color:#317adc;" href="{{latestItem.recentBuild.buildUrl}}">{{latestItem.recentBuild.buildId}}</a></span><span ng-show = "latestItem.recentBuild.buildStatus === 'success'" style="color:green;padding-left:5px;">{{latestItem.recentBuild.buildStatus | uppercase}}</span><span ng-show = "latestItem.recentBuild.buildStatus === 'failure'" style="color:red;padding-left:5px;">{{latestItem.recentBuild.buildStatus | uppercase}}</span><span style="padding-left:5px;">{{latestItem.recentBuild.buildTime}}</span></p>
+                <td><p ng-repeat="latestItem in ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.latestBuildsData | orderBy:'-(recentBuild.buildId)'">Build<span style="padding-left:5px;"><a style="color:#317adc;" href="{{latestItem.recentBuild.buildUrl}}">{{latestItem.recentBuild.buildId}}</a></span><span ng-style="{'color': (latestItem.recentBuild.buildStatus === 'success') ? 'green' : 'red','padding-left':'5px'}">{{latestItem.recentBuild.buildStatus | uppercase}}</span><span style="padding-left:5px;">{{latestItem.recentBuild.buildTime}}</span></p>
                 </td>
                 <td>{{ctrl.allWidgetDetails.Builds.totalBuildsLastWeek.meanTime2Resolved}}</td>
             </tr>
