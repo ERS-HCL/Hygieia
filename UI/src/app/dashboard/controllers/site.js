@@ -118,7 +118,7 @@
         //getting widget details
         function getCurrentWidgetDetails(serviceName,widgetName,widgetData,dashboardId,currentItem){
             console.log("current widgetData is : ",widgetData);
-            if(widgetData !== undefined && widgetData !== ''){
+            if(widgetData !== undefined && widgetData !== '' && widgetData !== 0){
                 switch(widgetName){
                     case 'Build':
                         ctrl.allWidgetDetails.Builds.widgetName = widgetName;
