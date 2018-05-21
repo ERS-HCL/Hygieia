@@ -428,7 +428,8 @@
                                             buildId: parseInt(build.number),
                                             buildStatus: build.status,
                                             buildTime: moment(build.endTime).minutes() + " Mins",
-                                            buildUrl: build.buildUrl
+                                            //buildUrl: build.buildUrl
+                                            buildUrl: build.url
                                         }
                                     });
                                 });
