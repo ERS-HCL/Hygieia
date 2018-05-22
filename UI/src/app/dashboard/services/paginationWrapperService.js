@@ -140,7 +140,7 @@
 
                                 // filter to successful builds in the last 15 days
                                 function filter(data) {
-                                    return _.filter(data, function (item) {
+                                    return _.filter(data, function (item) {                                        
                                         return item.buildStatus == 'Success' && Math.floor(moment(item.endTime).endOf('day').diff(moment(new Date()).endOf('day'), 'days')) >= -15;
                                     });
                                 }
@@ -419,6 +419,18 @@
                                 // var days = duration.asDays();
                                  return days;
                             }
+                            function calculateHours(startDate, endDate) {
+                                var start_date = moment(startDate, 'YYYY-MM-DD HH:mm:ss');
+                                var end_date = moment(endDate, 'YYYY-MM-DD HH:mm:ss');
+                                //var duration = moment.duration(end_date.diff(start_date));
+                                var startArr = startDate.split("/");
+                                var endArr = endDate.split("/");
+                                var a = moment([parseInt(startArr[2]), parseInt(startArr[0]), parseInt(startArr[1])]);
+                                var b = moment([parseInt(endArr[2]), parseInt(endArr[0]), parseInt(endArr[1])]);
+                                var hours = b.diff(a, 'hours');
+                                // var days = duration.asDays();
+                                 return hours;
+                            }
                             //For Reformating data from json data for displaying text in Tabular content
                             function reformattingObject(obj) {
                                 var updatedObject = [];
@@ -464,6 +476,54 @@
                                     return 0;
                                 }
 
+                            }
+                           
+                            function getMeanTimeToResolved(buildsData){
+                                var timeDuration = 0;
+                                var tempData = [];
+                                for(var i=0;i<=buildsData.length-1;i++){
+                                    if(buildsData[i].buildStatus === "Failure"){
+                                        var temp1 = getSuccessFailureDetails(i,buildsData);
+                                        tempData.push({"build1":i,"build2":temp1});
+                                        i = temp1;
+                                    }
+                                }
+                                //console.log("tempData is : ", tempData);
+
+                                _(tempData).forEach(function(val,key){
+                                    var failBuild = buildsData[val.build1].endTime;
+                                    var succBuild = (val.build2 !== undefined)?buildsData[val.build2].startTime:new Date();   
+                                    //timeDuration += moment.duration(moment(succBuild).diff(moment(failBuild))).asHours();//This is for hours checking
+                                    //timeDuration += -1*Math.floor(moment(failBuild).endOf('day').diff(moment(succBuild).endOf('day'), 'days'));//This is for Days checking
+                                    timeDuration += -1*Math.floor(moment(failBuild).endOf('hour').diff(moment(succBuild).endOf('hour'), 'hours'));//This is for Hours checking
+                                });
+                                var failBuildsLength = _.filter(buildsData, function (build) {
+                                    return build.buildStatus === "Failure";
+                                }).length;
+                                //console.log("timeDuration is : ",timeDuration);
+                                var currentMTTR = Math.ceil(timeDuration/tempData.length);
+                                var MTTRvalue = 0;
+                                if(currentMTTR > 24){
+                                    MTTRvalue = (Math.floor(currentMTTR/24) > 1)? Math.floor(currentMTTR/24) + " Days":Math.floor(currentMTTR/24) + " Day";
+                                }else if(currentMTTR < 24){
+                                    if(currentMTTR < 1){
+                                        MTTRvalue = (currentMTTR.toFixed(2)*100) + " Mins";
+                                    }else{
+                                        MTTRvalue = currentMTTR + " Hours";
+                                    }
+                                }else if(currentMTTR == 24){
+                                    MTTRvalue = "1 Day";
+                                }
+                                //console.log("MTTR is : ",MTTRvalue);
+                                return MTTRvalue;
+
+                            }
+                            function getSuccessFailureDetails(x,data){
+                                for(var p=x+1;p<=data.length-1;p++){
+                                    if(data[p].buildStatus === "Success"){
+                                        return p;
+                                    }
+                                }
                             }
                             //Get latest build status
                             function getLastBuildStatus(obj) {
@@ -578,12 +638,15 @@
                                 AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildUrl : "#";
                                 AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildId : 0;
                                 AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildStatus !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildStatus !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildStatus : 0;
+                                //console.log("AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus is : ",AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus);
                                 AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildTime : 0;
                                 AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildUrl : "#";
                                                               
                                 //For Getting time difference from last successful commits
-                                AllDashBuildsData.meanTime2Resolved = getMeanTimeResolvedData(data.getAllBuildsStatusDetails, data.getAllBuildsDetails) + " Days";
-                              //});
+                                //AllDashBuildsData.meanTime2Resolved = getMeanTimeResolvedData(data.getAllBuildsStatusDetails, data.getAllBuildsDetails) + " Days";
+                                AllDashBuildsData.meanTime2Resolved = getMeanTimeToResolved(data.getAllBuildsDetails);
+                                console.log("AllDashBuildsData.meanTime2Resolved is : ",AllDashBuildsData.meanTime2Resolved);
+                                //});
                             });
                             //endregion
                         }
@@ -600,7 +663,7 @@
                             // get total commits by day
                             var groups = _(data).sortBy('timestamp')
                                 .groupBy(function (item) {
-                                    return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
+                                   return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
                                 }).value();
 
                             for (var x = -1 * numberOfDays + 1; x <= 0; x++) {
