@@ -28,6 +28,8 @@
         // ctrl.allWidgetDetails.Commits = widgetCommitsItems;
         ctrl.username = userService.getUsername();
         ctrl.showAuthentication = userService.isAuthenticated();
+        ctrl.createDashboardEnable = userService.isAdmin();
+        console.log("ctrl.createDashboardEnable is : ",ctrl.createDashboardEnable);
 
         ctrl.templateUrl = 'app/dashboard/views/navheader.html';
         ctrl.dashboardTypeEnum = DashboardType;
