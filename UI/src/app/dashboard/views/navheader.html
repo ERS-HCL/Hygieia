@@ -1,9 +1,25 @@
 <div id="header">
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="background-color: #7d90ad !important;border-color:#7d90ad;">
         <div class="container-fluid">
 
             <a ng-href="#/" class="dashboard-logo dashboard-logo-inverse"></a>
+            <!-- <span class="welcome-header" style="float:left;margin-left: 40%;font-size: 2.5rem">
+                    Quality Metrics Dashboard
+                   </span> -->
+                   <svg viewBox="0 0 1200 100">
+	<symbol id="s-text">
+		<text text-anchor="middle" x="50%" y="80%">Quality Metrics Dashboard</text>
+	</symbol>
 
+	<g class = "g-ants">
+		<use xlink:href="#s-text" class="text-copy"></use>
+		<use xlink:href="#s-text" class="text-copy"></use>
+		<use xlink:href="#s-text" class="text-copy"></use>
+		<use xlink:href="#s-text" class="text-copy"></use>
+		<use xlink:href="#s-text" class="text-copy"></use>
+	</g>
+</svg>
+                   
             <div ng-show="ctrl.showAuthentication">
                 <div class="pull-right">
 
@@ -43,3 +59,64 @@
         </div>
     </nav>
 </div>
+<style>
+    @import url(https://fonts.googleapis.com/css?family=Montserrat);
+
+/* html, body{
+  height: 100%;
+  font-weight: 800;
+}
+
+body{
+  background: #030321;
+  font-family: Arial;
+} */
+
+svg {
+    float:left;
+    display: block;
+    font: 3.5em 'Montserrat';
+    /* width: 90px; */
+    height: 50px;
+    margin: 0 auto;
+    margin-left:27%;
+}
+
+.text-copy {
+    fill: none;
+    stroke: white;
+    stroke-dasharray: 6% 29%;
+    stroke-width: 5px;
+    stroke-dashoffset: 0%;
+    animation: stroke-offset 5.5s infinite linear;
+}
+
+.text-copy:nth-child(1){
+	stroke: #4D163D;
+	animation-delay: -1;
+}
+
+.text-copy:nth-child(2){
+	stroke: #840037;
+	animation-delay: -2s;
+}
+
+.text-copy:nth-child(3){
+	stroke: #BD0034;
+	animation-delay: -3s;
+}
+
+.text-copy:nth-child(4){
+	stroke: #BD0034;
+	animation-delay: -4s;
+}
+
+.text-copy:nth-child(5){
+	stroke: #FDB731;
+	animation-delay: -5s;
+}
+
+@keyframes stroke-offset{
+	100% {stroke-dashoffset: -35%;}
+}
+</style>
