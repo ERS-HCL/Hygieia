@@ -140,7 +140,7 @@
 
                                 // filter to successful builds in the last 15 days
                                 function filter(data) {
-                                    return _.filter(data, function (item) {                                        
+                                    return _.filter(data, function (item) {
                                         return item.buildStatus == 'Success' && Math.floor(moment(item.endTime).endOf('day').diff(moment(new Date()).endOf('day'), 'days')) >= -15;
                                     });
                                 }
@@ -344,7 +344,7 @@
                                                 return build.endTime >= twentyOneDays.getTime();
                                             });
                                             if (getStatusDetails(currentData) !== 2) {
-                                                return { status: "Failed" };
+                                                return { "status": "Failed" };
                                             } else {
                                                 var updatedData = _.filter(currentData, function (build) {
                                                     return build.buildStatus !== "Failure";
@@ -406,30 +406,34 @@
                                 }
                             }
                             //endregion
-                            //For calculating Date difference
-                            function calculateDays(startDate, endDate) {
-                                var start_date = moment(startDate, 'YYYY-MM-DD HH:mm:ss');
-                                var end_date = moment(endDate, 'YYYY-MM-DD HH:mm:ss');
-                                //var duration = moment.duration(end_date.diff(start_date));
-                                var startArr = startDate.split("/");
-                                var endArr = endDate.split("/");
-                                var a = moment([parseInt(startArr[2]), parseInt(startArr[0]), parseInt(startArr[1])]);
-                                var b = moment([parseInt(endArr[2]), parseInt(endArr[0]), parseInt(endArr[1])]);
-                                var days = b.diff(a, 'days');
-                                // var days = duration.asDays();
-                                 return days;
-                            }
-                            function calculateHours(startDate, endDate) {
-                                var start_date = moment(startDate, 'YYYY-MM-DD HH:mm:ss');
-                                var end_date = moment(endDate, 'YYYY-MM-DD HH:mm:ss');
-                                //var duration = moment.duration(end_date.diff(start_date));
-                                var startArr = startDate.split("/");
-                                var endArr = endDate.split("/");
-                                var a = moment([parseInt(startArr[2]), parseInt(startArr[0]), parseInt(startArr[1])]);
-                                var b = moment([parseInt(endArr[2]), parseInt(endArr[0]), parseInt(endArr[1])]);
-                                var hours = b.diff(a, 'hours');
-                                // var days = duration.asDays();
-                                 return hours;
+                            // //For calculating Date difference
+                            // function calculateDays(startDate, endDate) {
+                            //     var start_date = moment(startDate, 'YYYY-MM-DD HH:mm:ss');
+                            //     var end_date = moment(endDate, 'YYYY-MM-DD HH:mm:ss');
+                            //     //var duration = moment.duration(end_date.diff(start_date));
+                            //     var startArr = startDate.split("/");
+                            //     var endArr = endDate.split("/");
+                            //     var a = moment([parseInt(startArr[2]), parseInt(startArr[0]), parseInt(startArr[1])]);
+                            //     var b = moment([parseInt(endArr[2]), parseInt(endArr[0]), parseInt(endArr[1])]);
+                            //     var days = b.diff(a, 'days');
+                            //     // var days = duration.asDays();
+                            //     return days;
+                            // }
+                            function calculateHours(startTimeStampInMS, endTimeStampInMS) {                               
+                                //console.log("startDate.getTime() is : ", moment(startTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
+                                //console.log("endDate.getTime() is : ", moment(endTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
+                                // Example milliseconds input
+                                // var startTimeStampInMS = 1490019060000;
+                                // var endTimeStampInMS = 1490085900000;
+                                // Build moment duration object
+                                var duration = moment.duration(endTimeStampInMS - startTimeStampInMS);
+                                // Format duration in HH:mm format
+                                //console.log(duration.format('HH:mm', { trim: false }));
+                                var Mhours  = duration.days()*24+ duration.hours();
+                                var Mhours2Mins = (duration.days()*24+ duration.hours())*60;
+                                Mhours2Mins = Mhours2Mins + duration.minutes();
+                                var MtotalHours = Mhours2Mins/60;                                
+                                return MtotalHours;                                
                             }
                             //For Reformating data from json data for displaying text in Tabular content
                             function reformattingObject(obj) {
@@ -447,83 +451,91 @@
                                 });
                                 return updatedObject;
                             }
-                            //Get Mean Time To Resolved Details 
-                            function getMeanTimeResolvedData(successObject, BuildsData) {
-                                var meanTimeTotal = 0;
-                                var timeDuration = 0;
-                                var count = 0;
-                                if (successObject.status !== "Failed") {
-                                    for (var i = 0; i <= successObject.length - 1; i++) {
-                                        timeDuration = successObject[i].timeDuration;
-                                        var endTime1 = successObject[i].endTime;
-                                        if (successObject[i + 1] != undefined) {
-                                            var endTime2 = (successObject[i + 1] === undefined) ? successObject[i].endTime : successObject[i + 1].endTime;
-                                            if (endTime1 !== undefined && endTime2 !== undefined) {
-                                                count += 1;
-                                                meanTimeTotal += calculateDays(moment(endTime1).format('L'), moment(endTime2).format('L'));
-                                            } else {
-                                                meanTimeTotal += 0;
+                            //To get MEAN Time To Recovery
+                            function getMeanTimeToRecovery(successObj, AllBuilds) {
+                                //console.log("successObj is : ", successObj);
+                                successObj = removeDuplicates(successObj);
+                                //console.log("successObj is : ", successObj);
+                                AllBuilds = removeDuplicates(AllBuilds);                                
+                                var MEANtimeDuration = 0;
+                                var i = 0;
+                                var instanceCount = 0;
+                                var MeantTimeToResolvedData = 0;
+                                var MTTR = 0;
+                                if(successObj[0] !== "Failed"){
+                                for (i = successObj.length - 1; i >= 0; i--) {
+                                    if (successObj[i - 1] !== undefined && (parseInt(successObj[i].number) !== parseInt(successObj[i - 1].number))) {
+                                        var successBuildTime = successObj[i].endTime;
+                                        var failureBuildTime = function () {
+                                            var getSuccCount = 0;
+                                            var j = '';
+                                            var k = '';
+                                            var l = '';
+                                            var getSuccessObj1 = '';
+                                            var getSuccessObj2 = '';
+                                            var getFailureObj = '';
+                                            for (j = AllBuilds.length - 1; j >= 0; j--) {
+                                                if (AllBuilds[j].id === successObj[i].id) {
+                                                    getSuccessObj1 = j;
+
+                                                }
+                                            }
+                                            for (k = getSuccessObj1; k >= 0; k--) {
+                                                if (AllBuilds[k].id === successObj[i - 1].id) {
+                                                    getSuccessObj2 = k;
+                                                }
+                                            }
+                                            if (getSuccessObj2 !== getSuccessObj1) {
+                                                if (getSuccessObj1 === getSuccessObj2 + 1) {
+                                                    return "noData";
+                                                } else {
+                                                    for (l = getSuccessObj2 + 1; l < getSuccessObj1; l++) {
+                                                        if (AllBuilds[l].buildStatus === "Failure") {
+                                                            return AllBuilds[l].startTime;
+                                                        }
+                                                    }
+                                                }
+
                                             }
 
+                                        };
+                                        if (failureBuildTime() !== "noData") {
+                                            var a = calculateHours(failureBuildTime(), successBuildTime);
+                                            MEANtimeDuration += a;
+                                            instanceCount += 1;
+                                        } else {
+                                            MEANtimeDuration = MEANtimeDuration;
                                         }
                                     }
-                                } else {
-                                    meanTimeTotal = 0;
                                 }
-                                if (meanTimeTotal !== 0 && count !== 0) {
-                                    return Math.ceil(meanTimeTotal / count);
-                                } else {
-                                    return 0;
-                                }
-
-                            }
-                           
-                            function getMeanTimeToResolved(buildsData){
-                                var timeDuration = 0;
-                                var tempData = [];
-                                for(var i=0;i<=buildsData.length-1;i++){
-                                    if(buildsData[i].buildStatus === "Failure"){
-                                        var temp1 = getSuccessFailureDetails(i,buildsData);
-                                        tempData.push({"build1":i,"build2":temp1});
-                                        i = temp1;
+                                MeantTimeToResolvedData = MEANtimeDuration/instanceCount;
+                                if(MeantTimeToResolvedData !== 0){
+                                    if(MeantTimeToResolvedData > 1){
+                                        MTTR = Math.ceil(MeantTimeToResolvedData) + " Hours";
+                                        return MTTR;
+                                    }else if(MeantTimeToResolvedData < 1){
+                                        MTTR = (MeantTimeToResolvedData * 60) + " Mins";
+                                        return MTTR;
                                     }
                                 }
-                                //console.log("tempData is : ", tempData);
+                                }else {
+                                    MTTR = '';
+                                    return MTTR;
+                                }
+                                
+                            }
 
-                                _(tempData).forEach(function(val,key){
-                                    var failBuild = buildsData[val.build1].endTime;
-                                    var succBuild = (val.build2 !== undefined)?buildsData[val.build2].startTime:new Date();   
-                                    //timeDuration += moment.duration(moment(succBuild).diff(moment(failBuild))).asHours();//This is for hours checking
-                                    //timeDuration += -1*Math.floor(moment(failBuild).endOf('day').diff(moment(succBuild).endOf('day'), 'days'));//This is for Days checking
-                                    timeDuration += -1*Math.floor(moment(failBuild).endOf('hour').diff(moment(succBuild).endOf('hour'), 'hours'));//This is for Hours checking
+                            //Remove Duplicates data 
+                            function removeDuplicates(arr) {
+                                var newArr = [];
+                                angular.forEach(arr, function (value, key) {
+                                    var exists = false;
+                                    angular.forEach(newArr, function (val2, key) {
+                                        if (angular.equals(value.id, val2.id)) { exists = true };
+                                    });
+                                    if (exists == false && value.id != "") { newArr.push(value); }
                                 });
-                                var failBuildsLength = _.filter(buildsData, function (build) {
-                                    return build.buildStatus === "Failure";
-                                }).length;
-                                //console.log("timeDuration is : ",timeDuration);
-                                var currentMTTR = Math.ceil(timeDuration/tempData.length);
-                                var MTTRvalue = 0;
-                                if(currentMTTR > 24){
-                                    MTTRvalue = (Math.floor(currentMTTR/24) > 1)? Math.floor(currentMTTR/24) + " Days":Math.floor(currentMTTR/24) + " Day";
-                                }else if(currentMTTR < 24){
-                                    if(currentMTTR < 1){
-                                        MTTRvalue = (currentMTTR.toFixed(2)*100) + " Mins";
-                                    }else{
-                                        MTTRvalue = currentMTTR + " Hours";
-                                    }
-                                }else if(currentMTTR == 24){
-                                    MTTRvalue = "1 Day";
-                                }
-                                //console.log("MTTR is : ",MTTRvalue);
-                                return MTTRvalue;
-
-                            }
-                            function getSuccessFailureDetails(x,data){
-                                for(var p=x+1;p<=data.length-1;p++){
-                                    if(data[p].buildStatus === "Success"){
-                                        return p;
-                                    }
-                                }
+                                return newArr;
                             }
                             //Get latest build status
                             function getLastBuildStatus(obj) {
@@ -598,8 +610,8 @@
                                 ctrl.DashtotalBuildsLastMonth = data.fourteenDays;
                                 AllDashBuildsData.AllSuccessBuilds = data.getAllBuildsSuccessData;
                                 AllDashBuildsData.AllSuccessBuilds = AllDashBuildsData.AllSuccessBuilds.slice((AllDashBuildsData.AllSuccessBuilds.length - 2), AllDashBuildsData.AllSuccessBuilds.length);
-                                AllDashBuildsData.latestBuildsData = reformattingObject(ctrl.DashrecentBuilds); 
-                                AllDashBuildsData.latestBuildsData = (AllDashBuildsData.latestBuildsData).sort(function(obj1, obj2) {
+                                AllDashBuildsData.latestBuildsData = reformattingObject(ctrl.DashrecentBuilds);
+                                AllDashBuildsData.latestBuildsData = (AllDashBuildsData.latestBuildsData).sort(function (obj1, obj2) {
                                     // Ascending: first age less than the previous
                                     //return parseInt(obj1.recentBuild.buildId) - parseInt(obj2.recentBuild.buildId);
                                     return obj1.recentBuild.buildId - obj2.recentBuild.buildId;
@@ -619,33 +631,19 @@
                                         buildTime: '',
                                         buildUrl: ''
                                     }
-                                };
-                                /* Below changes for getting recent Builds details from last success builds only
-                                // AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0 && AllDashBuildsData.AllSuccessBuilds[1].number !== undefined && AllDashBuildsData.AllSuccessBuilds[1].number !== '') ? AllDashBuildsData.AllSuccessBuilds[1].number : 0;
-                                // AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = "Success";
-                                // AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? moment.duration(AllDashBuildsData.AllSuccessBuilds[1].duration).minutes() + " Mins" : 0;
-                                // AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[1].buildUrl : 0;
-                                // AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[0].number : 0;
-                                // AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = "Success";
-                                // AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? moment.duration(AllDashBuildsData.AllSuccessBuilds[0].duration).minutes() + " Mins" : 0;
-                                // AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.AllSuccessBuilds[1].buildUrl : 0;
-                                */
+                                };                              
 
                                 /*To get recent Builds Details from all builds details*/
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildId : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildStatus !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildStatus !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildStatus : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildTime : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-1].recentBuild.buildUrl : "#";
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildId : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildStatus !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildStatus !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildStatus : 0;
-                                //console.log("AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus is : ",AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus);
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildTime : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length-2].recentBuild.buildUrl : "#";
-                                                              
-                                //For Getting time difference from last successful commits
-                                //AllDashBuildsData.meanTime2Resolved = getMeanTimeResolvedData(data.getAllBuildsStatusDetails, data.getAllBuildsDetails) + " Days";
-                                AllDashBuildsData.meanTime2Resolved = getMeanTimeToResolved(data.getAllBuildsDetails);
-                                console.log("AllDashBuildsData.meanTime2Resolved is : ",AllDashBuildsData.meanTime2Resolved);
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildTime : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildUrl : "#";
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildId : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildStatus !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildStatus !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildStatus : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildUrl : "#";
+                                AllDashBuildsData.meanTime2Resolved = getMeanTimeToRecovery(data.getAllBuildsStatusDetails, data.getAllBuildsDetails);
+                                
                                 //});
                             });
                             //endregion
@@ -663,7 +661,7 @@
                             // get total commits by day
                             var groups = _(data).sortBy('timestamp')
                                 .groupBy(function (item) {
-                                   return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
+                                    return -1 * Math.floor(moment.duration(moment().diff(moment(item.scmCommitTimestamp))).asDays());
                                 }).value();
 
                             for (var x = -1 * numberOfDays + 1; x <= 0; x++) {
@@ -812,20 +810,20 @@
                                         return rv;
                                     }, {});
                                 };
-                                
+
                                 var groubedByAge = groupBy(data.result[0].defectAnalysis.detail, 'age');
                                 var AgeingDetails = [];
                                 var AgeingDetailsAll = [];
-                                _(groubedByAge).forEach(function(val,key){
+                                _(groubedByAge).forEach(function (val, key) {
                                     AgeingDetails.push(parseInt(key));
                                 });
-                                for(var i=0;i <= AgeingDetails.length-1;i++){
-                                    if(AgeingDetails.indexOf(i) !== -1){
+                                for (var i = 0; i <= AgeingDetails.length - 1; i++) {
+                                    if (AgeingDetails.indexOf(i) !== -1) {
                                         AgeingDetailsAll.push({
-                                        "ageingDays":i,
-                                        "value":groubedByAge[i],
-                                        "ageingDate":moment().subtract(i, "days").format("DD-MM-YYYY")
-                                    });
+                                            "ageingDays": i,
+                                            "value": groubedByAge[i],
+                                            "ageingDate": moment().subtract(i, "days").format("DD-MM-YYYY")
+                                        });
                                     }
                                 }
                                 AllDashDefectsData.todayDefectCount = _.filter(data.result[0].defectAnalysis.detail, function (defect) {

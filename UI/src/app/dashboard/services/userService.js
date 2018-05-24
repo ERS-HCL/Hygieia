@@ -40,7 +40,6 @@
 
       this.isAdmin = function () {
         var user = getUser();
-        console.log("user.roles : ",user.roles);
         if (user.roles && user.roles.indexOf("ROLE_ADMIN") > -1 || (user.roles && user.roles.indexOf("ROLE_TEAM") > -1)) return true;
         return false;
       }
