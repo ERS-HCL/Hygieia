@@ -20,16 +20,7 @@
 	</g>
 </svg> -->
 <!-- <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch"> -->
-<input type="search" name="collectorItemId" class="searchTerm" placeholder="Type to find dashboard"
-                           ng-model="ctrl.search"
-                           uib-typeahead="item.description for item in ctrl.filterByTitle($viewValue)" typeahead-focus
-                           typeahead-template-url="jobUrlTemplate.html"
-                           typeahead-min-length="0"
-                           typeahead-wait-ms="250"
-                           autocomplete="off"
-                           typeahead-no-results="noResults"
-                           required>
-                   
+
             <div ng-show="ctrl.showAuthentication">
                 <div class="pull-right">
 
@@ -39,6 +30,17 @@
                             <span class="fa-circle fa-stack-2x"></span>
                             <span class="fa-plus fa-stack-1x"></span>
                         </span>
+
+                        <input type="search" name="collectorItemId" class="searchTerm" placeholder="Type to find dashboard"
+                           ng-model="ctrl.search"
+                           uib-typeahead="item.description for item in ctrl.filterByTitle($viewValue)" typeahead-focus
+                           typeahead-template-url="jobUrlTemplate.html"
+                           typeahead-min-length="0"
+                           typeahead-wait-ms="250"
+                           autocomplete="off"
+                           typeahead-no-results="noResults"
+                           required>
+                   
 
                        <span class="fa-stack fa-lg" ng-show="ctrl.myadmin" ng-click="ctrl.admin()">
                            <i class="fa fa-circle fa-stack-2x"></i>
