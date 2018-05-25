@@ -53,19 +53,23 @@
 }
 
 .widgetDetailsModal {
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    font-size:10px !important;
+	// font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	border-collapse: collapse;
     width: 100%;
     // width: 725px;
+    table,th,td{
+        border: 1px solid #1fb5e7 !important;
+    }
     label {
         background-color: rgb(152, 151, 221);
     }
 	td {
-		border: 1px solid #ddd;
+		// border: 1px solid #ddd;
 		padding: 8px;
 	}
 	th {
-        border: 1px solid #ddd;
+        // border: 1px solid #ddd;
         padding: 12px 8px;
         text-align: left;
         background-color: #8eabd8;
@@ -74,10 +78,27 @@
 
 	tr {
 		&:nth-child(even) {
-			background-color: #f2f2f2;
+			background-color: rgb(190, 218, 250);
 		}
 		&:hover {
 			background-color: #ddd;
 		}
 	}
 }
+.searchTerm {
+    float: left;
+    width: 138px;
+    border: 3px solid #00B4CC;
+    padding: 5px;
+    height: 20px;
+    border-radius: 5px;
+    outline: none;
+    color: #9DBFAF;
+    margin-left: 97px;
+    margin-top: 24px;
+    font-size: 10px;
+  }
+  
+  .searchTerm:focus{
+    color: #00B4CC;
+  }

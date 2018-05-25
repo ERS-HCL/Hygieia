@@ -3,10 +3,10 @@
         <div class="container-fluid">
 
             <a ng-href="#/" class="dashboard-logo dashboard-logo-inverse"></a>
-            <!-- <span class="welcome-header" style="float:left;margin-left: 40%;font-size: 2.5rem">
+            <span class="welcome-header" style="float:left;margin-left: 40%;font-size: 2.5rem">
                     Quality Metrics Dashboard
-                   </span> -->
-                   <svg viewBox="0 0 1200 100">
+                   </span>
+                   <!-- <svg viewBox="0 0 1200 100">
 	<symbol id="s-text">
 		<text text-anchor="middle" x="50%" y="80%">Quality Metrics Dashboard</text>
 	</symbol>
@@ -18,13 +18,27 @@
 		<use xlink:href="#s-text" class="text-copy"></use>
 		<use xlink:href="#s-text" class="text-copy"></use>
 	</g>
-</svg>
+</svg> -->
+<!-- <input type="text" class="form-control" id="userSearch" placeholder="Filter Users" ng-model="userSearch"> -->
+<input type="search" name="collectorItemId" class="searchTerm" placeholder="Type to find dashboard"
+                           ng-model="ctrl.search"
+                           uib-typeahead="item.description for item in ctrl.filterByTitle($viewValue)" typeahead-focus
+                           typeahead-template-url="jobUrlTemplate.html"
+                           typeahead-min-length="0"
+                           typeahead-wait-ms="250"
+                           autocomplete="off"
+                           typeahead-no-results="noResults"
+                           required>
                    
             <div ng-show="ctrl.showAuthentication">
                 <div class="pull-right">
 
                     <span class="welcome-header">
                     Welcome  {{ ctrl.username  | uppercase}}
+                    <span class="fa fa-stack fa-lg" ng-click="ctrl.createDashboard()" ng-show="ctrl.myadmin" ng-click="ctrl.admin()">
+                            <span class="fa-circle fa-stack-2x"></span>
+                            <span class="fa-plus fa-stack-1x"></span>
+                        </span>
 
                        <span class="fa-stack fa-lg" ng-show="ctrl.myadmin" ng-click="ctrl.admin()">
                            <i class="fa fa-circle fa-stack-2x"></i>
@@ -92,22 +106,22 @@ svg {
 }
 
 .text-copy:nth-child(1){
-	stroke: #4D163D;
+	stroke: rgb(14, 204, 14);
 	animation-delay: -1;
 }
 
 .text-copy:nth-child(2){
-	stroke: #840037;
+	stroke: rgb(14, 204, 14);
 	animation-delay: -2s;
 }
 
 .text-copy:nth-child(3){
-	stroke: #BD0034;
+	stroke: red;
 	animation-delay: -3s;
 }
 
 .text-copy:nth-child(4){
-	stroke: #BD0034;
+	stroke: red;
 	animation-delay: -4s;
 }
 

@@ -420,8 +420,8 @@
                             //     return days;
                             // }
                             function calculateHours(startTimeStampInMS, endTimeStampInMS) {                               
-                                //console.log("startDate.getTime() is : ", moment(startTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
-                                //console.log("endDate.getTime() is : ", moment(endTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
+                                // console.log("startDate.getTime() is : ", moment(startTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
+                                // console.log("endDate.getTime() is : ", moment(endTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
                                 // Example milliseconds input
                                 // var startTimeStampInMS = 1490019060000;
                                 // var endTimeStampInMS = 1490085900000;
@@ -432,7 +432,7 @@
                                 var Mhours  = duration.days()*24+ duration.hours();
                                 var Mhours2Mins = (duration.days()*24+ duration.hours())*60;
                                 Mhours2Mins = Mhours2Mins + duration.minutes();
-                                var MtotalHours = Mhours2Mins/60;                                
+                                var MtotalHours = Mhours2Mins/60;                           
                                 return MtotalHours;                                
                             }
                             //For Reformating data from json data for displaying text in Tabular content
@@ -456,12 +456,20 @@
                                 //console.log("successObj is : ", successObj);
                                 successObj = removeDuplicates(successObj);
                                 //console.log("successObj is : ", successObj);
-                                AllBuilds = removeDuplicates(AllBuilds);                                
+                                AllBuilds = removeDuplicates(AllBuilds);
+                                var MTTRDetials = {
+                                    allsuccessObj:[],
+                                    succfailobj:[],
+                                    MTTRvalue:'',
+                                    MTTRvalueFormatted:'',
+                                    SumOfMEANtimeDuration:''
+
+                                };
                                 var MEANtimeDuration = 0;
                                 var i = 0;
                                 var instanceCount = 0;
                                 var MeantTimeToResolvedData = 0;
-                                var MTTR = 0;
+                                var MTTR = 0;                                
                                 if(successObj[0] !== "Failed"){
                                 for (i = successObj.length - 1; i >= 0; i--) {
                                     if (successObj[i - 1] !== undefined && (parseInt(successObj[i].number) !== parseInt(successObj[i - 1].number))) {
@@ -502,16 +510,18 @@
                                         if (failureBuildTime() !== "noData") {
                                             var a = calculateHours(failureBuildTime(), successBuildTime);
                                             MEANtimeDuration += a;
-                                            instanceCount += 1;
+                                            instanceCount += 1; 
                                         } else {
-                                            MEANtimeDuration = MEANtimeDuration;
+                                            MEANtimeDuration = MEANtimeDuration; 
                                         }
                                     }
                                 }
                                 MeantTimeToResolvedData = MEANtimeDuration/instanceCount;
                                 if(MeantTimeToResolvedData !== 0){
                                     if(MeantTimeToResolvedData > 1){
-                                        MTTR = Math.ceil(MeantTimeToResolvedData) + " Hours";
+                                        MTTR = (MeantTimeToResolvedData*60);
+                                        MTTR = (MTTR/60).toFixed()+" Hours "+(MTTR%60)+" Mins";
+                                        //MTTR = Math.ceil(MeantTimeToResolvedData) + " Hours";
                                         return MTTR;
                                     }else if(MeantTimeToResolvedData < 1){
                                         MTTR = (MeantTimeToResolvedData * 60) + " Mins";
