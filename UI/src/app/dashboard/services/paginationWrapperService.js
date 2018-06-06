@@ -419,21 +419,28 @@
                             //     // var days = duration.asDays();
                             //     return days;
                             // }
-                            function calculateHours(startTimeStampInMS, endTimeStampInMS) {                               
-                                // console.log("startDate.getTime() is : ", moment(startTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
+                            function calculateHours(startTimeStampInMS, endTimeStampInMS) {
+                                 console.log("startDate.getTime() is : ", moment(startTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
                                 // console.log("endDate.getTime() is : ", moment(endTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
+                                // console.log("Current Timestamp is : ",moment().format('MMMM Do YYYY, h:mm:ss a'));
                                 // Example milliseconds input
                                 // var startTimeStampInMS = 1490019060000;
-                                // var endTimeStampInMS = 1490085900000;
+                                // var endTimeStampInMS = 1490085900000;                                
+                                var CurrentTimestamp = moment().valueOf();
+                                console.log("CurrentTimestamp ",moment().valueOf());
+                                endTimeStampInMS = (endTimeStampInMS !== 0)?endTimeStampInMS:CurrentTimestamp;
+                                console.log("endDate.getTime() is : ", moment(endTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
                                 // Build moment duration object
                                 var duration = moment.duration(endTimeStampInMS - startTimeStampInMS);
+                                console.log("duration is : ",duration);
                                 // Format duration in HH:mm format
                                 //console.log(duration.format('HH:mm', { trim: false }));
-                                var Mhours  = duration.days()*24+ duration.hours();
-                                var Mhours2Mins = (duration.days()*24+ duration.hours())*60;
+                                var Mhours = duration.days() * 24 + duration.hours();
+                                var Mhours2Mins = (duration.days() * 24 + duration.hours()) * 60;
                                 Mhours2Mins = Mhours2Mins + duration.minutes();
-                                var MtotalHours = Mhours2Mins/60;                           
-                                return MtotalHours;                                
+                                var MtotalHours = Mhours2Mins / 60;
+                                //console.log("Total Hours is : ",MtotalHours);
+                                return MtotalHours;
                             }
                             //For Reformating data from json data for displaying text in Tabular content
                             function reformattingObject(obj) {
@@ -455,86 +462,119 @@
                             function getMeanTimeToRecovery(successObj, AllBuilds) {
                                 //console.log("successObj is : ", successObj);
                                 successObj = removeDuplicates(successObj);
-                                //console.log("successObj is : ", successObj);
+                                console.log("successObj is : ", successObj);
                                 AllBuilds = removeDuplicates(AllBuilds);
                                 var MTTRDetials = {
-                                    allsuccessObj:[],
-                                    succfailobj:[],
-                                    MTTRvalue:'',
-                                    MTTRvalueFormatted:'',
-                                    SumOfMEANtimeDuration:''
+                                    allsuccessObj: [],
+                                    succfailobj: [],
+                                    MTTRvalue: '',
+                                    MTTRvalueFormatted: '',
+                                    SumOfMEANtimeDuration: ''
 
                                 };
                                 var MEANtimeDuration = 0;
                                 var i = 0;
                                 var instanceCount = 0;
-                                var MeantTimeToResolvedData = 0;
-                                var MTTR = 0;                                
-                                if(successObj[0] !== "Failed"){
-                                for (i = successObj.length - 1; i >= 0; i--) {
-                                    if (successObj[i - 1] !== undefined && (parseInt(successObj[i].number) !== parseInt(successObj[i - 1].number))) {
-                                        var successBuildTime = successObj[i].endTime;
-                                        var failureBuildTime = function () {
-                                            var getSuccCount = 0;
-                                            var j = '';
-                                            var k = '';
-                                            var l = '';
-                                            var getSuccessObj1 = '';
-                                            var getSuccessObj2 = '';
-                                            var getFailureObj = '';
-                                            for (j = AllBuilds.length - 1; j >= 0; j--) {
-                                                if (AllBuilds[j].id === successObj[i].id) {
-                                                    getSuccessObj1 = j;
-
-                                                }
-                                            }
-                                            for (k = getSuccessObj1; k >= 0; k--) {
-                                                if (AllBuilds[k].id === successObj[i - 1].id) {
-                                                    getSuccessObj2 = k;
-                                                }
-                                            }
-                                            if (getSuccessObj2 !== getSuccessObj1) {
-                                                if (getSuccessObj1 === getSuccessObj2 + 1) {
-                                                    return "noData";
-                                                } else {
-                                                    for (l = getSuccessObj2 + 1; l < getSuccessObj1; l++) {
-                                                        if (AllBuilds[l].buildStatus === "Failure") {
-                                                            return AllBuilds[l].startTime;
-                                                        }
+                                var MTTR = 0;
+                                if (successObj[0] !== "Failed") {
+                                    for (i = successObj.length - 1; i >= 0; i--) {
+                                        if (successObj[i - 1] !== undefined && (parseInt(successObj[i].number) !== parseInt(successObj[i - 1].number))) {
+                                            var successBuildTime = successObj[i].endTime;
+                                            var failureBuildTime = function () {
+                                                var getSuccCount = 0;
+                                                var j = '';
+                                                var k = '';
+                                                var l = '';
+                                                var getSuccessObj1 = '';
+                                                var getSuccessObj2 = '';
+                                                var getFailureObj = '';
+                                                for (j = AllBuilds.length - 1; j >= 0; j--) {
+                                                    if (AllBuilds[j].id === successObj[i].id) {
+                                                        getSuccessObj1 = j;
                                                     }
                                                 }
+                                                if (getSuccessObj1 !== '') {
+                                                    for (k = getSuccessObj1; k >= 0; k--) {
+                                                        if (AllBuilds[k].id === successObj[i - 1].id) {
+                                                            getSuccessObj2 = k;
+                                                        }
+                                                    }
+                                                    if (getSuccessObj2 !== getSuccessObj1) {
+                                                        if (getSuccessObj1 === getSuccessObj2 + 1) {
+                                                            return "noData";
+                                                        } else {
+                                                            for (l = getSuccessObj2 + 1; l < getSuccessObj1; l++) {
+                                                                if (AllBuilds[l].buildStatus === "Failure") {
+                                                                    return AllBuilds[l].startTime;
+                                                                }
+                                                            }
+                                                        }
 
+                                                    }
+                                                } else {
+                                                    console.log("We don't have last Success Build");
+                                                    // console.log("successObj[i] is  : ", successObj);
+                                                    return "noData";
+                                                }
                                             }
-
-                                        };
-                                        if (failureBuildTime() !== "noData") {
-                                            var a = calculateHours(failureBuildTime(), successBuildTime);
-                                            MEANtimeDuration += a;
-                                            instanceCount += 1; 
-                                        } else {
-                                            MEANtimeDuration = MEANtimeDuration; 
+                                            //console.log("failureBuildTime() is : ", failureBuildTime());
+                                            if (failureBuildTime() !== "noData") {
+                                                var a = calculateHours(failureBuildTime(), successBuildTime);
+                                                MEANtimeDuration += a;
+                                                instanceCount += 1;
+                                            } else {
+                                                MEANtimeDuration = MEANtimeDuration;
+                                            }
                                         }
                                     }
+                                    // console.log("MEANtimeDuration is : ", MEANtimeDuration);
+                                    // console.log("instanceCount is ", instanceCount);
+                                    return getMTTRvalue(MEANtimeDuration,instanceCount);
+                                } else {  
+                                var failureBuildTime = AllBuilds[0].startTime;   
+                                var MTTR_Hours = calculateHours(failureBuildTime, 0);
+                                console.log("MTTR_Hours is : ",MTTR_Hours);
+                                MEANtimeDuration += MTTR_Hours;
+                                instanceCount += 1;
+                                return getMTTRvalue(MEANtimeDuration,instanceCount);
                                 }
-                                MeantTimeToResolvedData = MEANtimeDuration/instanceCount;
-                                if(MeantTimeToResolvedData !== 0){
-                                    if(MeantTimeToResolvedData > 1){
-                                        MTTR = (MeantTimeToResolvedData*60);
-                                        MTTR = (MTTR/60).toFixed()+" Hours "+(MTTR%60)+" Mins";
+
+                            }
+
+                            //To get MTTR Value
+                            function getMTTRvalue(MEANtimeDuration,instanceCount){
+                                console.log("I am in getMTTRvalue");
+                                console.log("MEANtimeDuration is ",MEANtimeDuration);
+                                console.log("instanceCount is ",instanceCount);
+                                var MeantTimeToResolvedData = 0;
+                                var MTTR = 0;
+                                if (instanceCount !== 0) {
+                                    MeantTimeToResolvedData = MEANtimeDuration / instanceCount;
+                                    //console.log("MeantTimeToResolvedData is ",MeantTimeToResolvedData);
+                                    if (MeantTimeToResolvedData > 1) {
+                                        MTTR = (MeantTimeToResolvedData * 60);
+                                        //console.log("MTTR is : ",MTTR);
+                                        var currentHours = (MTTR / 60).toFixed();
+                                        var currentDays = '';
+                                        var MTTR_Day = '';
+                                        var currentHours1 = '';
+                                        var currentHours2 = '';
+                                        if (currentHours > 24) {
+                                            MTTR = ((currentHours / 24).toFixed()) + " Days " + (currentHours % 24) + " Hours";
+                                        } else if (currentHours < 25) {
+                                            MTTR = currentHours + " Hours";
+                                        }
+                                        //MTTR = (MTTR/60).toFixed()+" Hours "+(MTTR%60)+" Mins";
                                         //MTTR = Math.ceil(MeantTimeToResolvedData) + " Hours";
                                         return MTTR;
-                                    }else if(MeantTimeToResolvedData < 1){
+                                    } else if (MeantTimeToResolvedData < 1) {
                                         MTTR = (MeantTimeToResolvedData * 60) + " Mins";
                                         return MTTR;
                                     }
+                                }else{
+                                    return "noData";
                                 }
-                                }else {
-                                    MTTR = '';
-                                    return MTTR;
-                                }
-                                
                             }
-
                             //Remove Duplicates data 
                             function removeDuplicates(arr) {
                                 var newArr = [];
@@ -641,7 +681,7 @@
                                         buildTime: '',
                                         buildUrl: ''
                                     }
-                                };                              
+                                };
 
                                 /*To get recent Builds Details from all builds details*/
                                 AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId : 0;
@@ -653,7 +693,8 @@
                                 AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime : 0;
                                 AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildUrl : "#";
                                 AllDashBuildsData.meanTime2Resolved = getMeanTimeToRecovery(data.getAllBuildsStatusDetails, data.getAllBuildsDetails);
-                                
+                                console.log("AllDashBuildsData.meanTime2Resolved is : ", AllDashBuildsData.meanTime2Resolved);
+
                                 //});
                             });
                             //endregion
