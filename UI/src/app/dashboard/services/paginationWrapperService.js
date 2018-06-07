@@ -481,12 +481,16 @@
                                 extendSuccess = getExtendSuccess(AllBuilds,successObj);
                                 console.log("extendSuccess is : ",extendSuccess);
                                 if(extendSuccess === true && successObj.length === 2){
+                                    var lastSuccessBuildIteration = '';
                                     function getNextMTTRDuration(){
                                         var currentIteration = '';
                                         var CurrentTimestamp = moment().valueOf();
                                         var failureBuildTime = '';
-                                        for (var t = 0; t < AllBuilds.length-1; t++) {
-                                            if (AllBuilds[t].buildStatus === "Failure") {
+                                        for (var t = lastSuccessBuildIteration; t <= AllBuilds.length-1; t++) {
+                                            console.log("lastSuccessBuildIteration is  : ",lastSuccessBuildIteration);
+                                            console.log("AllBuilds is  : ",AllBuilds);
+                                            console.log("AllBuilds[t]  is : ",AllBuilds[t]);
+                                            if (AllBuilds[t] !== undefined && AllBuilds[t].buildStatus === "Failure") {
                                                 failureBuildTime = AllBuilds[t].startTime;
                                                 var a = calculateHours(failureBuildTime, CurrentTimestamp);
                                                 MEANtimeDuration += a;
@@ -501,6 +505,15 @@
                                     }
                                     console.log("current success object length is 2 : ",successObj);
                                     console.log("AllBuilds is : ",AllBuilds);
+                                   
+                                    for (var t = 0; t <= AllBuilds.length-1; t++) {
+                                        if(AllBuilds[t].number === successObj[1].number){
+                                            lastSuccessBuildIteration = t;
+                                        }
+                                    }
+
+                                    console.log("lastSuccessBuildIteration is : ",lastSuccessBuildIteration);
+
                                         var successBuildTime = successObj[0].endTime;
                                             var failureBuildTime = '';
                                             failureBuildTime = AllBuilds[0].startTime;
