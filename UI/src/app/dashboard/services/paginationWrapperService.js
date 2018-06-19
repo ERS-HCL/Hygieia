@@ -324,7 +324,8 @@
                                 }
                                 function getBuildsSuccessData() {
                                     return _.filter(data, function (build) {
-                                        return build.buildStatus !== "Failure";
+                                        return build.buildStatus !== "Failure" && build.buildStatus !== "Aborted";
+                                        //return build.buildStatus !== "Failure";
                                     });
                                 }
                                 function getBuildStatusDetails() {
@@ -347,7 +348,8 @@
                                                 return { "status": "Failed" };
                                             } else {
                                                 var updatedData = _.filter(currentData, function (build) {
-                                                    return build.buildStatus !== "Failure";
+                                                    return build.buildStatus !== "Failure" && build.buildStatus !== 'Aborted';
+                                                    //return build.buildStatus !== "Failure";
                                                 });
                                                 // _(updatedData).forEach(function (build) {
                                                 //     if (build.number !== data[data.length - 1].number) {
@@ -357,15 +359,13 @@
                                                 // if (lastBuildAvailable) {
                                                 //     updatedData.push(data[data.length - 1]);
                                                 // }
-                                                console.log("updatedData is  : ",updatedData);
                                                 return updatedData;
                                             }
                                         } else {
-                                            console.log("In else part : ",currentData);
                                             var updatedData = _.filter(currentData, function (build) {
-                                                return build.buildStatus !== "Failure";
+                                                return build.buildStatus !== "Failure" && build.buildStatus !== "Aborted";
+                                                //return build.buildStatus !== "Failure";
                                             });
-                                            console.log(" Before for each updatedData is  : ",updatedData);
                                             // _(updatedData).forEach(function (build) {
                                             //     if (build.number !== data[data.length - 1].number) {
                                             //         lastBuildAvailable = true;
@@ -374,12 +374,12 @@
                                             // if (lastBuildAvailable) {
                                             //     updatedData.push(data[data.length - 1]);
                                             // }
-                                            console.log("Before return updatedData is  : ",updatedData);
                                             return updatedData;
                                         }
                                     } else {
                                         var updatedData = _.filter(currentData, function (build) {
-                                            return build.buildStatus !== "Failure";
+                                            return build.buildStatus !== "Failure" && build.buildStatus !== "Aborted";
+                                            //return build.buildStatus !== "Failure";
                                         });
                                         // _(updatedData).forEach(function (build) {
                                         //     if (build.number !== data[data.length - 1].number) {
@@ -389,7 +389,6 @@
                                         // if (lastBuildAvailable) {
                                         //     updatedData.push(data[data.length - 1]);
                                         // }
-                                        console.log("updatedData is  : ",updatedData);
                                         return updatedData;
                                     }
                                 }
@@ -402,7 +401,7 @@
                                     _(obj).forEach(function (buildItem, index) {
                                         if (buildItem.buildStatus === 'Success') {
                                             status1 = 1;
-                                        } else if (buildItem.buildStatus === 'Failure') {
+                                        } else if (buildItem.buildStatus === 'Failure' || buildItem.buildStatus === 'Aborted') {
                                             status2 = 1;
                                         }
                                     });
@@ -523,15 +522,11 @@
 
                             //To get MEAN Time from new code
                             function getMeanTimeToRecovery(successObj, AllBuilds) {
-                                console.log("i am in getMeanTimeToRecovery() ");
-                                console.log(" successObj is : ", successObj);
-                                console.log(" AllBuilds is : ", AllBuilds);
                                 var MEANtimeDuration = 0;
                                 var i = 0;
                                 var instanceCount = 0;
                                 var MTTR = 0;
                                 if (successObj.length !== 0) {
-                                    console.log("current success Object :", successObj);
                                     if (successObj.length === 1) {
                                         var currentSuccessIterationFunc = '';
                                         var currentSuccessIteration = '';
@@ -552,7 +547,7 @@
                                         //currentSuccessIteration = currentSuccessIterationFunc();
                                         // getFailureTimeFunc = function () {
                                         for (var t = 0; t <= currentSuccessIteration; t++) {
-                                            if (AllBuilds[t].buildStatus === "Failure") {
+                                            if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
                                                 //return AllBuilds[t].BuildStartTime;
                                                 getFailureTime = AllBuilds[t].startTime;
                                             } else {
@@ -564,25 +559,19 @@
                                         //getFailureTime = getFailureTimeFunc();
                                         //getSuccessTime = moment().valueOf();
                                         getSuccessTime = AllBuilds[currentSuccessIteration].endTime;
-                                        console.log("getFailureTime is : ", getFailureTime);
-                                        console.log("getSuccessTime is : ", getSuccessTime);
                                         if (getFailureTime !== '' && getSuccessTime !== '') {
-                                            console.log("Before call calculateHours() : ");
-                                            console.log("getFailureTime is : ", getFailureTime);
-                                            console.log("getSuccessTime is  : ", getSuccessTime);
                                             var a = calculateHours(getFailureTime, getSuccessTime);
                                             MEANtimeDuration += a;
                                             instanceCount += 1;
                                         }
                                         if (getFailureTime === '') {
-                                            console.log("Getting getFailureTime as ''");
                                             MEANtimeDuration = MEANtimeDuration;
                                             instanceCount += 1;
                                         }
                         
                                         //getSecondFailureTimeFunc = function () {
                                         for (var t = currentSuccessIteration; t <= AllBuilds.length - 1; t++) {
-                                            if (AllBuilds[t].buildStatus === "Failure") {
+                                            if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
                                                 //return AllBuilds[t].BuildStartTime;
                                                 getSecondFailureTime = AllBuilds[t].startTime;
                                             } else {
@@ -593,23 +582,16 @@
                                         //};     
                                         //getSecondFailureTime = getSecondFailureTimeFunc();           
                                         getSecondSuccessTime = moment().valueOf();
-                                        console.log("getSecondFailureTime is : ", getSecondFailureTime);
-                                        console.log("getSecondSuccessTime is : ", getSecondSuccessTime);
                                         if (getSecondFailureTime !== '' && getSecondSuccessTime !== '') {
-                                            console.log("Before call calculateHours() : ");
-                                            console.log("getSecondFailureTime is : ", getSecondFailureTime);
-                                            console.log("getSecondSuccessTime is  : ", getSecondSuccessTime);
                                             var a = calculateHours(getSecondFailureTime, getSecondSuccessTime);
                                             MEANtimeDuration += a;
                                             instanceCount += 1;
                                         }
                                         if (getSecondFailureTime === '') {
-                                            console.log("Getting getSecondFailureTime as ''");
                                             MEANtimeDuration = MEANtimeDuration;
                                             instanceCount += 1;
                                         }
-                                        console.log("current instanceCount is : ", instanceCount);
-                                        console.log("MEANtimeDuration is : ", MEANtimeDuration);
+                                        
                         
                                     } else {
                                         
@@ -630,7 +612,7 @@
                                                     };
                                                     getFailureTime = function () {
                                                         for (var t = currentSuccessIteration(); t <= AllBuilds.length - 1; t++) {
-                                                            if (AllBuilds[t].buildStatus === "Failure") {
+                                                            if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
                                                                 return AllBuilds[t].startTime;
                                                             }
                                                         }
@@ -663,8 +645,6 @@
                                                 }
                                             } else {
                                                 console.log("Etry is  : ", successObj);
-                                                console.log("Else part");
-                                                console.log("successObj[i - 1] !== undefined && (parseInt(successObj[i].BuildNumber) !== parseInt(successObj[i - 1].BuildNumber)) ", successObj[i - 1] !== undefined && (parseInt(successObj[i].BuildNumber) !== parseInt(successObj[i - 1].BuildNumber)));
                                             }
                                         }
                                        }else{
@@ -673,11 +653,9 @@
                                                         instanceCount += 1;
                                        }
                                     }
-                                    console.log("Before getMTTRvalue()" + MEANtimeDuration + "  " + instanceCount);
-                                    
                                     return getMTTRvalue(MEANtimeDuration, instanceCount);
                                 }else if(successObj.status === "Failed" && AllBuilds.length !== 0){ //This else part getting MTTR value from initial failure Time
-                                    console.log("Current All Builds is  : ",AllBuilds);
+                                    
                                     var failureBuildTime = AllBuilds[0].startTime;
                                     var MTTR_Hours = calculateHours(failureBuildTime, 0);
                                     //console.log("MTTR_Hours is : ",MTTR_Hours);
@@ -724,10 +702,7 @@
                                     }
                                 } else {
                                     console.log(" I will be return 'noData'");
-                                    console.log("MEANtimeDuration is ",MEANtimeDuration);
-                                console.log("instanceCount is ",instanceCount);
-
-                                    return "noData";
+                                     return "noData";
                                 }
                             }
 
@@ -756,7 +731,7 @@
                                     if (getSuccessObj2 !== getSuccessObj1) {
                                         if (getSuccessObj1 !== getSuccessObj2 + 1) {
                                             for (l = getSuccessObj2 + 1; l < getSuccessObj1; l++) {
-                                                if (AllBuilds[l].buildStatus === "Failure") {
+                                                if (AllBuilds[l].buildStatus === "Failure" || AllBuilds[l].buildStatus === 'Aborted') {
                                                     return AllBuilds[l].startTime;
                                                 }
                                             }
@@ -773,7 +748,7 @@
                                                     }
                                                 };
                                                     for (var t = 0; t < currentSuccessIteration(); t++) {
-                                                        if (AllBuilds[t].buildStatus === "Failure") {
+                                                        if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
                                                             return AllBuilds[t].startTime;
                                                         }
                                                     }                                                
@@ -837,7 +812,6 @@
                             });
 
                             worker.latestBuilds(data, function (buildsToDisplay) {
-                                console.log("in latestBuilds : ",buildsToDisplay);
                                 //$scope.$apply(function () {
                                 ctrl.DashrecentBuilds = buildsToDisplay;
                                 //});
