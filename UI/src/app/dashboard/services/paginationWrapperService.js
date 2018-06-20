@@ -382,8 +382,8 @@
                                     return statusTot;
                                 }
                             }
-                           
-                            function calculateHours(startTimeStampInMS, endTimeStampInMS) {            
+                            /**To CalculateHours With two timestamp value */
+                            function calculateHours(startTimeStampInMS, endTimeStampInMS) {
                                 var CurrentTimestamp = moment().valueOf();
                                 endTimeStampInMS = (endTimeStampInMS !== 0) ? endTimeStampInMS : CurrentTimestamp;
                                 // Build moment duration object
@@ -419,12 +419,9 @@
                                 var MTTR = 0;
                                 if (successObj.length !== 0) {
                                     if (successObj.length === 1) {
-                                        var currentSuccessIterationFunc = '';
                                         var currentSuccessIteration = '';
-                                        var getFailureTimeFunc = '';
                                         var getFailureTime = '';
                                         var getSuccessTime = '';
-                                        var getSecondFailureTimeFunc = '';
                                         var getSecondFailureTime = '';
                                         var getSecondSuccessTime = '';
                                         for (var t = 0; t <= AllBuilds.length - 1; t++) {
@@ -439,7 +436,7 @@
                                                 getFailureTime = '';
                                             }
                                         }
-                                        
+
                                         getSuccessTime = AllBuilds[currentSuccessIteration].endTime;
                                         if (getFailureTime !== '' && getSuccessTime !== '') {
                                             var a = calculateHours(getFailureTime, getSuccessTime);
@@ -450,14 +447,14 @@
                                             MEANtimeDuration = MEANtimeDuration;
                                             instanceCount += 1;
                                         }
-                        
+
                                         for (var t = currentSuccessIteration; t <= AllBuilds.length - 1; t++) {
                                             if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
                                                 getSecondFailureTime = AllBuilds[t].startTime;
                                             } else {
                                                 getSecondFailureTime = '';
                                             }
-                                        }      
+                                        }
                                         getSecondSuccessTime = moment().valueOf();
                                         if (getSecondFailureTime !== '' && getSecondSuccessTime !== '') {
                                             var a = calculateHours(getSecondFailureTime, getSecondSuccessTime);
@@ -468,82 +465,82 @@
                                             MEANtimeDuration = MEANtimeDuration;
                                             instanceCount += 1;
                                         }
-                                        
-                        
+
+
                                     } else {
-                                        
-                                       if(AllBuilds.length !== 0 && successObj.length >=1){
-                                        for (i = successObj.length - 1; i >= 0; i--) {
-                                            if (successObj[i - 1] !== undefined && (parseInt(successObj[i].number) !== parseInt(successObj[i - 1].number))) {
-                                                
-                                                if (i === successObj.length - 1) {
-                                                    var currentSuccessIteration = '';
-                                                    var getFailureTime = '';
-                                                    var getSuccessTime = '';
-                                                    currentSuccessIteration = function () {
-                                                        for (var t = 0; t <= AllBuilds.length - 1; t++) {
-                                                            if (AllBuilds[t].number === successObj[i].number) {
-                                                                return t;
-                                                            }
-                                                        }
-                                                    };
-                                                    getFailureTime = function () {
-                                                        for (var t = currentSuccessIteration(); t <= AllBuilds.length - 1; t++) {
-                                                            if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
-                                                                return AllBuilds[t].startTime;
-                                                            }
-                                                        }
-                                                        return '';
-                                                    };
-                                                    getSuccessTime = moment().valueOf();
-                        
-                                                    if (getFailureTime() !== '' && getSuccessTime !== '') {
-                                                        
-                                                        var a = calculateHours(getFailureTime(), getSuccessTime);
-                                                        MEANtimeDuration += a;
-                                                        instanceCount += 1;
-                                                    }
-                                                }
+
+                                        if (AllBuilds.length !== 0 && successObj.length >= 1) {
+                                            for (i = successObj.length - 1; i >= 0; i--) {
                                                 if (successObj[i - 1] !== undefined && (parseInt(successObj[i].number) !== parseInt(successObj[i - 1].number))) {
-                                                    
-                                                    var successBuildTime = successObj[i].endTime;
-                                                    var failureBuildTime = '';
-                                                    failureBuildTime = getFailureBuildTime(i, successObj, AllBuilds);
-                                                    
-                                                    if (failureBuildTime !== "noData") {
-                                                       
-                                                        var a = calculateHours(failureBuildTime, successBuildTime);
-                                                        MEANtimeDuration += a;
-                                                        instanceCount += 1;
-                                                    } else {
-                                                        MEANtimeDuration = MEANtimeDuration;
-                                                        instanceCount += 1;
+
+                                                    if (i === successObj.length - 1) {
+                                                        var currentSuccessIteration = '';
+                                                        var getFailureTime = '';
+                                                        var getSuccessTime = '';
+                                                        currentSuccessIteration = function () {
+                                                            for (var t = 0; t <= AllBuilds.length - 1; t++) {
+                                                                if (AllBuilds[t].number === successObj[i].number) {
+                                                                    return t;
+                                                                }
+                                                            }
+                                                        };
+                                                        getFailureTime = function () {
+                                                            for (var t = currentSuccessIteration(); t <= AllBuilds.length - 1; t++) {
+                                                                if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
+                                                                    return AllBuilds[t].startTime;
+                                                                }
+                                                            }
+                                                            return '';
+                                                        };
+                                                        getSuccessTime = moment().valueOf();
+
+                                                        if (getFailureTime() !== '' && getSuccessTime !== '') {
+
+                                                            var a = calculateHours(getFailureTime(), getSuccessTime);
+                                                            MEANtimeDuration += a;
+                                                            instanceCount += 1;
+                                                        }
                                                     }
+                                                    if (successObj[i - 1] !== undefined && (parseInt(successObj[i].number) !== parseInt(successObj[i - 1].number))) {
+
+                                                        var successBuildTime = successObj[i].endTime;
+                                                        var failureBuildTime = '';
+                                                        failureBuildTime = getFailureBuildTime(i, successObj, AllBuilds);
+
+                                                        if (failureBuildTime !== "noData") {
+
+                                                            var a = calculateHours(failureBuildTime, successBuildTime);
+                                                            MEANtimeDuration += a;
+                                                            instanceCount += 1;
+                                                        } else {
+                                                            MEANtimeDuration = MEANtimeDuration;
+                                                            instanceCount += 1;
+                                                        }
+                                                    }
+                                                } else {
+                                                    console.log("Etry is  : ", successObj);
                                                 }
-                                            } else {
-                                                console.log("Etry is  : ", successObj);
                                             }
+                                        } else {
+                                            console.log("I am in here  man");
+                                            MEANtimeDuration = MEANtimeDuration;
+                                            instanceCount += 1;
                                         }
-                                       }else{
-                                           console.log("I am in here  man");
-                                           MEANtimeDuration = MEANtimeDuration;
-                                                        instanceCount += 1;
-                                       }
                                     }
                                     return getMTTRvalue(MEANtimeDuration, instanceCount);
-                                }else if(successObj.status === "Failed" && AllBuilds.length !== 0){ //This else part getting MTTR value from initial failure Time
-                                    
+                                } else if (successObj.status === "Failed" && AllBuilds.length !== 0) { //This else part getting MTTR value from initial failure Time
+
                                     var failureBuildTime = AllBuilds[0].startTime;
                                     var MTTR_Hours = calculateHours(failureBuildTime, 0);
                                     MEANtimeDuration += MTTR_Hours;
                                     instanceCount += 1;
                                     return getMTTRvalue(MEANtimeDuration, instanceCount);
-                                } else if(successObj.status === "Failed" && AllBuilds.length === 0){
+                                } else if (successObj.status === "Failed" && AllBuilds.length === 0) {
                                     MEANtimeDuration = MEANtimeDuration;
                                     instanceCount += 1;
                                     return getMTTRvalue(MEANtimeDuration, instanceCount);
                                 }
-                        
+
                             }
 
                             //To get MTTR Value
@@ -555,10 +552,6 @@
                                     if (MeantTimeToResolvedData > 1) {
                                         MTTR = (MeantTimeToResolvedData * 60);
                                         var currentHours = (MTTR / 60).toFixed();
-                                        var currentDays = '';
-                                        var MTTR_Day = '';
-                                        var currentHours1 = '';
-                                        var currentHours2 = '';
                                         if (currentHours > 24) {
                                             MTTR = ((currentHours / 24).toFixed()) + " Days " + ((currentHours % 24).toFixed()) + " Hours";
                                         } else if (currentHours < 25) {
@@ -571,19 +564,17 @@
                                     }
                                 } else {
                                     console.log(" I will be return 'noData'");
-                                     return "noData";
+                                    return "noData";
                                 }
                             }
 
                             //Get FailureBuldTime
                             function getFailureBuildTime(i, successObj, AllBuilds) {
-                                var getSuccCount = 0;
                                 var j = '';
                                 var k = '';
                                 var l = '';
                                 var getSuccessObj1 = '';
                                 var getSuccessObj2 = '';
-                                var getFailureObj = '';
                                 for (j = AllBuilds.length - 1; j >= 0; j--) {
                                     if (AllBuilds[j].id === successObj[i].id) {
                                         getSuccessObj1 = j;
@@ -591,7 +582,7 @@
                                 }
                                 if (getSuccessObj1 !== '') {
                                     for (k = getSuccessObj1; k >= 0; k--) {
-                                        if((i-1) !== -1){
+                                        if ((i - 1) !== -1) {
                                             if (AllBuilds[k].id === successObj[i - 1].id) {
                                                 getSuccessObj2 = k;
                                             }
@@ -605,39 +596,24 @@
                                                 }
                                             }
                                         }
-                                        if(getSuccessObj2 !== '' && (i-1) !== -1){
-                                                var currentSuccessIteration = '';
-                                                var getFailureTime = '';
-                                                var getSuccessTime = '';
-                                                currentSuccessIteration = function () {
-                                                    for (var t = 0; t <= AllBuilds.length - 1; t++) {
-                                                        if (AllBuilds[t].number === successObj[i].number) {
-                                                            return t;
-                                                        }
+                                        if (getSuccessObj2 !== '' && (i - 1) !== -1) {
+                                            var currentSuccessIteration = '';
+                                            currentSuccessIteration = function () {
+                                                for (var t = 0; t <= AllBuilds.length - 1; t++) {
+                                                    if (AllBuilds[t].number === successObj[i].number) {
+                                                        return t;
                                                     }
-                                                };
-                                                    for (var t = 0; t < currentSuccessIteration(); t++) {
-                                                        if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
-                                                            return AllBuilds[t].startTime;
-                                                        }
-                                                    }                                                
+                                                }
+                                            };
+                                            for (var t = 0; t < currentSuccessIteration(); t++) {
+                                                if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
+                                                    return AllBuilds[t].startTime;
+                                                }
+                                            }
                                         }
 
                                     }
                                 }
-                            }                            
-                            
-                            //Remove Duplicates data 
-                            function removeDuplicates(arr) {
-                                var newArr = [];
-                                angular.forEach(arr, function (value, key) {
-                                    var exists = false;
-                                    angular.forEach(newArr, function (val2, key) {
-                                        if (angular.equals(value.id, val2.id)) { exists = true };
-                                    });
-                                    if (exists == false && value.id != "") { newArr.push(value); }
-                                });
-                                return newArr;
                             }
                             //Get latest build status
                             function getLastBuildStatus(obj) {
@@ -645,10 +621,11 @@
                                     if (obj[obj.length - 1].recentBuild.buildStatus === "success") {
                                         return "Success";
                                     }
-                                    
+
                                     if (obj[obj.length - 1].recentBuild.buildStatus === "failure") {
                                         return "Failure";
                                     }
+                                    
                                     if (obj[obj.length - 1].recentBuild.buildStatus === "aborted") {
                                         return "Aborted";
                                     }
@@ -733,16 +710,51 @@
                                     }
                                 };
                                 /*To get recent Builds Details from all builds details*/
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildTime : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length !== 0) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildUrl : "#";
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (AllDashBuildsData.latestBuildsData.length === 2 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildId : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = (AllDashBuildsData.latestBuildsData.length === 2 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildStatus !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildStatus !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildStatus : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.latestBuildsData.length === 2 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime : 0;
-                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length === 2) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildUrl : "#";
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (
+                                    AllDashBuildsData.latestBuildsData.length !== 0
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId !== undefined
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId !== '')
+                                    ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId
+                                    : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = (AllDashBuildsData.latestBuildsData.length !== 0
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus !== undefined
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus !== '')
+                                    ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus
+                                    : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildTime = (
+                                    AllDashBuildsData.latestBuildsData.length !== 0
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildTime !== undefined
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildTime !== '')
+                                    ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildTime
+                                    : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuild.buildUrl = (
+                                    AllDashBuildsData.AllSuccessBuilds.length !== 0)
+                                    ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildUrl
+                                    : "#";
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildId = (
+                                    AllDashBuildsData.latestBuildsData.length === 2
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildId !== undefined
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildId !== '')
+                                    ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildId
+                                    : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildStatus = (
+                                    AllDashBuildsData.latestBuildsData.length === 2
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildStatus !== undefined
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildStatus !== '')
+                                    ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildStatus
+                                    : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (
+                                    AllDashBuildsData.latestBuildsData.length === 2
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime !== undefined
+                                    && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime !== '')
+                                    ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime
+                                    : 0;
+                                AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (
+                                    AllDashBuildsData.AllSuccessBuilds.length === 2)
+                                    ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildUrl
+                                    : "#";
                                 AllDashBuildsData.meanTime2Resolved = getMeanTimeToRecovery(data.getAllBuildsStatusDetails, data.getAllBuildsDetails);
-                                
+
                                 //});
                             });
                             //endregion
@@ -870,8 +882,14 @@
                             AllDashCommitsData.lastSevenDaysCommitCount = lastSevenDayCommitCount;
                             AllDashCommitsData.lastDayCommitCount = lastDayCommitCount;
                             AllDashCommitsData.lastSevenDaysCommitDetails = lastSevenDaysCommitDetails;
-                            AllDashCommitsData.avgDailyChange = (ctrl.lastSevenDaysCommitCount !== '' && ctrl.lastSevenDaysCommitCount !== null && ctrl.lastSevenDaysCommitCount !== undefined && ctrl.lastSevenDaysCommitCount !== 0)
-                                ? ((Math.ceil(7 / ctrl.lastSevenDaysCommitCount) > 1) ? (Math.ceil(7 / ctrl.lastSevenDaysCommitCount) + " Days") : (Math.ceil(7 / ctrl.lastSevenDaysCommitCount) + " Day"))
+                            AllDashCommitsData.avgDailyChange = (
+                                ctrl.lastSevenDaysCommitCount !== ''
+                                && ctrl.lastSevenDaysCommitCount !== null
+                                && ctrl.lastSevenDaysCommitCount !== undefined
+                                && ctrl.lastSevenDaysCommitCount !== 0)
+                                ? ((Math.ceil(7 / ctrl.lastSevenDaysCommitCount) > 1)
+                                    ? (Math.ceil(7 / ctrl.lastSevenDaysCommitCount) + " Days")
+                                    : (Math.ceil(7 / ctrl.lastSevenDaysCommitCount) + " Day"))
                                 : 0 + " Days";
 
                             function toMidnight(date) {
@@ -893,7 +911,9 @@
                             AllDashDefectsData.trendingData.last7DaysDefects = [];
                             AllDashDefectsData.avgDailyChange = 0;
                             AllDashDefectsData.defectTdpUrl = "#";
-                            if (data.result !== undefined && data.result.length !== 0 && data.result.length !== undefined) {
+                            if (data.result !== undefined
+                                && data.result.length !== 0
+                                && data.result.length !== undefined) {
                                 var count = 0;
                                 _(data.result[0].defectAnalysis.severities.info).forEach(function (val, key) {
                                     count += parseInt(val);
@@ -928,8 +948,14 @@
                                 AllDashDefectsData.todayDefectCount = _.filter(data.result[0].defectAnalysis.detail, function (defect) {
                                     return defect.age < 1;
                                 }).length;
-                                AllDashDefectsData.avgDailyChange = (AllDashDefectsData.last7DaysDefectCount !== '' && AllDashDefectsData.last7DaysDefectCount !== null && AllDashDefectsData.last7DaysDefectCount !== undefined && AllDashDefectsData.last7DaysDefectCount !== 0)
-                                    ? ((Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) > 1) ? (Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) + " Days") : (Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) + " Day"))
+                                AllDashDefectsData.avgDailyChange = (
+                                    AllDashDefectsData.last7DaysDefectCount !== ''
+                                    && AllDashDefectsData.last7DaysDefectCount !== null
+                                    && AllDashDefectsData.last7DaysDefectCount !== undefined
+                                    && AllDashDefectsData.last7DaysDefectCount !== 0)
+                                    ? ((Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) > 1)
+                                        ? (Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) + " Days")
+                                        : (Math.ceil(7 / AllDashDefectsData.last7DaysDefectCount) + " Day"))
                                     : 0 + " Days";
                                 AllDashDefectsData.defectTdpUrl = data.result[0].queryURL;
                                 // }

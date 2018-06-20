@@ -23,9 +23,6 @@
             Defects:{},
             Commits:{}
         };
-        // ctrl.allWidgetDetails.Builds = widgetBuildsItems;
-        // ctrl.allWidgetDetails.Defects = widgetDefectsItems;
-        // ctrl.allWidgetDetails.Commits = widgetCommitsItems;
         ctrl.username = userService.getUsername();
         ctrl.showAuthentication = userService.isAuthenticated();
         ctrl.createDashboardEnable = userService.isAdmin();
