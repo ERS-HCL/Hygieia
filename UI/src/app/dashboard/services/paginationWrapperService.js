@@ -349,46 +349,19 @@
                                             } else {
                                                 var updatedData = _.filter(currentData, function (build) {
                                                     return build.buildStatus !== "Failure" && build.buildStatus !== 'Aborted';
-                                                    //return build.buildStatus !== "Failure";
                                                 });
-                                                // _(updatedData).forEach(function (build) {
-                                                //     if (build.number !== data[data.length - 1].number) {
-                                                //         lastBuildAvailable = true;
-                                                //     }
-                                                // });
-                                                // if (lastBuildAvailable) {
-                                                //     updatedData.push(data[data.length - 1]);
-                                                // }
                                                 return updatedData;
                                             }
                                         } else {
                                             var updatedData = _.filter(currentData, function (build) {
                                                 return build.buildStatus !== "Failure" && build.buildStatus !== "Aborted";
-                                                //return build.buildStatus !== "Failure";
                                             });
-                                            // _(updatedData).forEach(function (build) {
-                                            //     if (build.number !== data[data.length - 1].number) {
-                                            //         lastBuildAvailable = true;
-                                            //     }
-                                            // });
-                                            // if (lastBuildAvailable) {
-                                            //     updatedData.push(data[data.length - 1]);
-                                            // }
                                             return updatedData;
                                         }
                                     } else {
                                         var updatedData = _.filter(currentData, function (build) {
                                             return build.buildStatus !== "Failure" && build.buildStatus !== "Aborted";
-                                            //return build.buildStatus !== "Failure";
                                         });
-                                        // _(updatedData).forEach(function (build) {
-                                        //     if (build.number !== data[data.length - 1].number) {
-                                        //         lastBuildAvailable = true;
-                                        //     }
-                                        // });
-                                        // if (lastBuildAvailable) {
-                                        //     updatedData.push(data[data.length - 1]);
-                                        // }
                                         return updatedData;
                                     }
                                 }
@@ -410,27 +383,16 @@
                                 }
                             }
                            
-                            function calculateHours(startTimeStampInMS, endTimeStampInMS) {
-                                //console.log("startDate.getTime() is : ", moment(startTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
-                                // console.log("endDate.getTime() is : ", moment(endTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
-                                // console.log("Current Timestamp is : ",moment().format('MMMM Do YYYY, h:mm:ss a'));
-                                // Example milliseconds input
-                                // var startTimeStampInMS = 1490019060000;
-                                // var endTimeStampInMS = 1490085900000;                                
+                            function calculateHours(startTimeStampInMS, endTimeStampInMS) {            
                                 var CurrentTimestamp = moment().valueOf();
-                                //console.log("CurrentTimestamp ",moment().valueOf());
                                 endTimeStampInMS = (endTimeStampInMS !== 0) ? endTimeStampInMS : CurrentTimestamp;
-                                //console.log("endDate.getTime() is : ", moment(endTimeStampInMS).format('MMMM Do YYYY, h:mm:ss a'));
                                 // Build moment duration object
                                 var duration = moment.duration(endTimeStampInMS - startTimeStampInMS);
-                                //console.log("duration is : ",duration);
                                 // Format duration in HH:mm format
-                                //console.log(duration.format('HH:mm', { trim: false }));
                                 var Mhours = duration.days() * 24 + duration.hours();
                                 var Mhours2Mins = (duration.days() * 24 + duration.hours()) * 60;
                                 Mhours2Mins = Mhours2Mins + duration.minutes();
                                 var MtotalHours = Mhours2Mins / 60;
-                                //console.log("Total Hours is : ",MtotalHours);
                                 return MtotalHours;
                             }
                             //For Reformating data from json data for displaying text in Tabular content
@@ -442,7 +404,6 @@
                                             buildId: parseInt(build.number),
                                             buildStatus: build.status,
                                             buildTime: moment(build.endTime).minutes() + " Mins",
-                                            //buildUrl: build.buildUrl
                                             buildUrl: build.url
                                         }
                                     });
@@ -466,28 +427,19 @@
                                         var getSecondFailureTimeFunc = '';
                                         var getSecondFailureTime = '';
                                         var getSecondSuccessTime = '';
-                                        // currentSuccessIterationFunc = function () {
                                         for (var t = 0; t <= AllBuilds.length - 1; t++) {
                                             if (AllBuilds[t].number === successObj[i].number) {
-                                                //return t;
                                                 currentSuccessIteration = t;
                                             }
                                         }
-                                        // };
-                                        //currentSuccessIteration = currentSuccessIterationFunc();
-                                        // getFailureTimeFunc = function () {
                                         for (var t = 0; t <= currentSuccessIteration; t++) {
                                             if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
-                                                //return AllBuilds[t].BuildStartTime;
                                                 getFailureTime = AllBuilds[t].startTime;
                                             } else {
                                                 getFailureTime = '';
                                             }
                                         }
-                                        //return '';
-                                        // };
-                                        //getFailureTime = getFailureTimeFunc();
-                                        //getSuccessTime = moment().valueOf();
+                                        
                                         getSuccessTime = AllBuilds[currentSuccessIteration].endTime;
                                         if (getFailureTime !== '' && getSuccessTime !== '') {
                                             var a = calculateHours(getFailureTime, getSuccessTime);
@@ -499,18 +451,13 @@
                                             instanceCount += 1;
                                         }
                         
-                                        //getSecondFailureTimeFunc = function () {
                                         for (var t = currentSuccessIteration; t <= AllBuilds.length - 1; t++) {
                                             if (AllBuilds[t].buildStatus === "Failure" || AllBuilds[t].buildStatus === 'Aborted') {
-                                                //return AllBuilds[t].BuildStartTime;
                                                 getSecondFailureTime = AllBuilds[t].startTime;
                                             } else {
                                                 getSecondFailureTime = '';
                                             }
-                                        }
-                                        //return '';
-                                        //};     
-                                        //getSecondFailureTime = getSecondFailureTimeFunc();           
+                                        }      
                                         getSecondSuccessTime = moment().valueOf();
                                         if (getSecondFailureTime !== '' && getSecondSuccessTime !== '') {
                                             var a = calculateHours(getSecondFailureTime, getSecondSuccessTime);
@@ -588,7 +535,6 @@
                                     
                                     var failureBuildTime = AllBuilds[0].startTime;
                                     var MTTR_Hours = calculateHours(failureBuildTime, 0);
-                                    //console.log("MTTR_Hours is : ",MTTR_Hours);
                                     MEANtimeDuration += MTTR_Hours;
                                     instanceCount += 1;
                                     return getMTTRvalue(MEANtimeDuration, instanceCount);
@@ -602,17 +548,12 @@
 
                             //To get MTTR Value
                             function getMTTRvalue(MEANtimeDuration, instanceCount) {
-                                //console.log("I am in getMTTRvalue");
-                                //console.log("MEANtimeDuration is ",MEANtimeDuration);
-                                //console.log("instanceCount is ",instanceCount);
                                 var MeantTimeToResolvedData = 0;
                                 var MTTR = 0;
                                 if (instanceCount !== 0) {
                                     MeantTimeToResolvedData = MEANtimeDuration / instanceCount;
-                                    //console.log("MeantTimeToResolvedData is ",MeantTimeToResolvedData);
                                     if (MeantTimeToResolvedData > 1) {
                                         MTTR = (MeantTimeToResolvedData * 60);
-                                        //console.log("MTTR is : ",MTTR);
                                         var currentHours = (MTTR / 60).toFixed();
                                         var currentDays = '';
                                         var MTTR_Day = '';
@@ -623,8 +564,6 @@
                                         } else if (currentHours < 25) {
                                             MTTR = currentHours + " Hours";
                                         }
-                                        //MTTR = (MTTR/60).toFixed()+" Hours "+(MTTR%60)+" Mins";
-                                        //MTTR = Math.ceil(MeantTimeToResolvedData) + " Hours";
                                         return MTTR;
                                     } else if (MeantTimeToResolvedData < 1) {
                                         MTTR = (MeantTimeToResolvedData * 60).toFixed() + " Mins";
@@ -703,11 +642,10 @@
                             //Get latest build status
                             function getLastBuildStatus(obj) {
                                 if (obj.length !== 0) {
-                                    //if (obj[obj.length - 1].buildStatus === "Success") {
                                     if (obj[obj.length - 1].recentBuild.buildStatus === "success") {
                                         return "Success";
                                     }
-                                    //if (obj[obj.length - 1].buildStatus === "Failure") {
+                                    
                                     if (obj[obj.length - 1].recentBuild.buildStatus === "failure") {
                                         return "Failure";
                                     }
@@ -779,8 +717,6 @@
                                     //return parseInt(obj1.recentBuild.buildId) - parseInt(obj2.recentBuild.buildId);
                                     return obj1.recentBuild.buildId - obj2.recentBuild.buildId;
                                 });
-                                //AllDashBuildsData.lastBuildStatus = getLastBuildStatus(data.getAllBuildsDetails);
-                                //console.log("getLastBuildStatus(AllDashBuildsData.latestBuildsData) : ",AllDashBuildsData.latestBuildsData)
                                 AllDashBuildsData.lastBuildStatus = getLastBuildStatus(AllDashBuildsData.latestBuildsData);
                                 AllDashBuildsData.last2SuccessBuilds = {
                                     recentBuild: {
@@ -796,7 +732,6 @@
                                         buildUrl: ''
                                     }
                                 };
-                                //console.log("AllDashBuildsData.latestBuildsData is : ",AllDashBuildsData);
                                 /*To get recent Builds Details from all builds details*/
                                 AllDashBuildsData.last2SuccessBuilds.recentBuild.buildId = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildId : 0;
                                 AllDashBuildsData.last2SuccessBuilds.recentBuild.buildStatus = (AllDashBuildsData.latestBuildsData.length !== 0 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 1].recentBuild.buildStatus : 0;
@@ -807,8 +742,7 @@
                                 AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildTime = (AllDashBuildsData.latestBuildsData.length === 2 && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime !== undefined && AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime !== '') ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildTime : 0;
                                 AllDashBuildsData.last2SuccessBuilds.recentBuildNext.buildUrl = (AllDashBuildsData.AllSuccessBuilds.length === 2) ? AllDashBuildsData.latestBuildsData[AllDashBuildsData.latestBuildsData.length - 2].recentBuild.buildUrl : "#";
                                 AllDashBuildsData.meanTime2Resolved = getMeanTimeToRecovery(data.getAllBuildsStatusDetails, data.getAllBuildsDetails);
-                                //console.log("AllDashBuildsData.meanTime2Resolved is : ", AllDashBuildsData.meanTime2Resolved);
-
+                                
                                 //});
                             });
                             //endregion
