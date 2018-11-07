@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: metrics-sonar-service
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
+  - port: 8081
+    targetPort: 8081
+    name: metrics-sonar-service
+  selector:
+    app: metrics-sonar
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: metrics-sonar-deployment
+  labels:
+    app: metrics-sonar
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: metrics-sonar
+  template:
+    metadata:
+      labels:
+        app: metrics-sonar
+    spec:
+      containers:
+      - name: metrics-sonar
+        image: hygieia-sonar-codequality-collector:latest
+        ports:
+        - containerPort: 80
