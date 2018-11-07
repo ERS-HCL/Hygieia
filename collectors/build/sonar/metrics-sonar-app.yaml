@@ -4,12 +4,12 @@ metadata:
   name: metrics-sonar-service
 spec:
   ports:
-  - port: 8080
+  - port: 80
     targetPort: 8080
     name: http
   - port: 8081
     targetPort: 8081
-    name: metrics-sonar-service
+    name: metrics-sonar-service-management
   selector:
     app: metrics-sonar
   type: NodePort
@@ -34,4 +34,4 @@ spec:
       - name: metrics-sonar
         image: hygieia-sonar-codequality-collector:latest
         ports:
-        - containerPort: 80
+        - containerPort: 8080
